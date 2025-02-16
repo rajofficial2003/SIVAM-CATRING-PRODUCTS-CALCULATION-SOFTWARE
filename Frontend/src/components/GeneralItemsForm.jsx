@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './GeneralItemsForm.css';
 
 const GeneralItemsForm = () => {
   const [items, setItems] = useState([

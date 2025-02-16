@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './EssenceAndColorForm.css';
 
 const EssenceAndColorForm = () => {
   const [essenceItems, setEssenceItems] = useState([

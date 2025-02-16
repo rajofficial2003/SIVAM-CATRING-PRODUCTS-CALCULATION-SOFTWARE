@@ -9,7 +9,7 @@ import MasalaForm from './components/MasalaForm';
 import SauceAndSuppliesForm from './components/SauceAndSuppliesForm';
 import FruitsForm from './components/FruitsForm';
 import VegetablesForm from './components/VegetablesForm';
-import BatterGrindingForm from './components/BatterGrindingForm';
+import BatterGrindingForm from './components/IdliBatterForm';
 import Footer from './components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';

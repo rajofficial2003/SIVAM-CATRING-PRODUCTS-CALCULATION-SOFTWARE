@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './MasalaForm.css';
 
 const MasalaForm = () => {
   const [masalaItems, setMasalaItems] = useState([

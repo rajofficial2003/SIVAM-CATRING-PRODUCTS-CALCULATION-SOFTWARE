@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './VegetablesForm.css';
 
 const VegetablesForm = () => {
   const [items, setItems] = useState([

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './BatterGrindingForm.css';
 
 const BatterGrindingForm = () => {
   const [items, setItems] = useState([
