@@ -1,0 +1,93 @@
+.card {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-header {
+  border-bottom: 2px solid #8b1f3f;
+  padding: 1rem;
+}
+
+.card-title {
+  color: #8b1f3f;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.tamil-text {
+  font-weight: 500;
+}
+
+.english-text {
+  color: #666;
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  background-color: #f8f9fa;
+  vertical-align: middle;
+}
+
+.sticky-top {
+  top: 0;
+  z-index: 1020;
+}
+
+.item-name-header {
+  width: 50%;
+}
+
+.measurement-header {
+  width: 25%;
+}
+
+.form-control {
+  border-radius: 4px;
+}
+
+.form-control:focus {
+  border-color: #8b1f3f;
+  box-shadow: 0 0 0 0.2rem rgba(139, 31, 63, 0.25);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(139, 31, 63, 0.05);
+}
+
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .tamil-text, .english-text {
+    display: block;
+  }
+  
+  .english-text {
+    margin-left: 0;
+    font-size: 0.8em;
+  }
+  
+  .table {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    border: none;
+    box-shadow: none;
+  }
+
+  .table td {
+    padding: 0.5rem;
+  }
+
+  .form-control {
+    font-size: 0.9rem;
+  }
+}
