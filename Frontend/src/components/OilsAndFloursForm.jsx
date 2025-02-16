@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+"use client"
 
-const OilsAndFloursForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const OilsAndFloursForm = forwardRef((props, ref) => {
   const [oilItems, setOilItems] = useState([
     { id: 1, tamilName: 'ரீஃபைன் ஆயில் SVS', englishName: 'Refined Oil SVS', liters: '', ml: '' },
     { id: 2, tamilName: 'தேங்காய் எண்ணெய் VVD', englishName: 'Coconut Oil VVD', liters: '', ml: '' },
@@ -15,7 +17,7 @@ const OilsAndFloursForm = () => {
     { id: 11, tamilName: 'சர்க்கரை இல்லாத கோவா', englishName: 'Sugar-free Khova', liters: '', ml: '' },
     { id: 12, tamilName: 'பிரட்', englishName: 'Bread', liters: '', ml: '' },
     { id: 13, tamilName: 'தாளான் (பட்டன்)', englishName: 'Thalan (Button)', liters: '', ml: '' },
-  ]);
+  ])
 
   const [flourItems, setFlourItems] = useState([
     { id: 1, tamilName: 'ரவை', englishName: 'Rava', kg: '', grams: '' },
@@ -28,19 +30,24 @@ const OilsAndFloursForm = () => {
     { id: 8, tamilName: 'பச்சரிசி மாவு', englishName: 'Raw Rice Flour', kg: '', grams: '' },
     { id: 9, tamilName: 'கார்ன் பிளவர் மாவு', englishName: 'Corn Flour', kg: '', grams: '' },
     { id: 10, tamilName: 'கிழங்கு மாவு', englishName: 'Potato Flour', kg: '', grams: '' },
-  ]);
+  ])
 
   const handleOilInputChange = (id, field, value) => {
-    setOilItems(oilItems.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
+    setOilItems(oilItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  }
 
   const handleFlourInputChange = (id, field, value) => {
-    setFlourItems(flourItems.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
+    setFlourItems(flourItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return {
+        oils: oilItems.filter((item) => item.liters || item.ml),
+        flours: flourItems.filter((item) => item.kg || item.grams),
+      }
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -72,7 +79,7 @@ const OilsAndFloursForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {oilItems.map(item => (
+                {oilItems.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -81,22 +88,22 @@ const OilsAndFloursForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.liters}
-                        onChange={(e) => handleOilInputChange(item.id, 'liters', e.target.value)}
+                        onChange={(e) => handleOilInputChange(item.id, "liters", e.target.value)}
                         placeholder="Liters"
                       />
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.ml}
-                        onChange={(e) => handleOilInputChange(item.id, 'ml', e.target.value)}
+                        onChange={(e) => handleOilInputChange(item.id, "ml", e.target.value)}
                         placeholder="ml"
                       />
                     </td>
@@ -136,7 +143,7 @@ const OilsAndFloursForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {flourItems.map(item => (
+                {flourItems.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -145,22 +152,22 @@ const OilsAndFloursForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.kg}
-                        onChange={(e) => handleFlourInputChange(item.id, 'kg', e.target.value)}
+                        onChange={(e) => handleFlourInputChange(item.id, "kg", e.target.value)}
                         placeholder="Kg"
                       />
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.grams}
-                        onChange={(e) => handleFlourInputChange(item.id, 'grams', e.target.value)}
+                        onChange={(e) => handleFlourInputChange(item.id, "grams", e.target.value)}
                         placeholder="Grams"
                       />
                     </td>
@@ -172,7 +179,8 @@ const OilsAndFloursForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default OilsAndFloursForm;
+export default OilsAndFloursForm
+

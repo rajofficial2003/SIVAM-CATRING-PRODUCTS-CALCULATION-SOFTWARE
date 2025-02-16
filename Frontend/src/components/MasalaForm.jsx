@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+"use client"
 
-const MasalaForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const MasalaForm = forwardRef((props, ref) => {
   const [masalaItems, setMasalaItems] = useState([
     { id: 1, tamilName: 'ஆச்சி குழம்பு மிளகாய் தூள்', englishName: 'Aachi Kulambu Chili Powder', kg: '', grams: '' },
     { id: 2, tamilName: 'மஞ்சள் தூள் (சக்தி)', englishName: 'Turmeric Powder (Sakthi)', kg: '', grams: '' },
@@ -16,13 +18,17 @@ const MasalaForm = () => {
     { id: 12, tamilName: 'சென்னா மசாலா (சக்தி)', englishName: 'Chenna Masala (Sakthi)', kg: '', grams: '' },
     { id: 13, tamilName: 'முட்டை மசாலா (சக்தி)', englishName: 'Egg Masala (Sakthi)', kg: '', grams: '' },
     { id: 14, tamilName: 'சாட் மசாலா (சக்தி)', englishName: 'Chat Masala (Sakthi)', kg: '', grams: '' },
-  ]);
+  ])
 
   const handleInputChange = (id, field, value) => {
-    setMasalaItems(masalaItems.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
+    setMasalaItems(masalaItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return masalaItems.filter((item) => item.kg || item.grams)
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -53,7 +59,7 @@ const MasalaForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {masalaItems.map(item => (
+                {masalaItems.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -62,22 +68,22 @@ const MasalaForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.kg}
-                        onChange={(e) => handleInputChange(item.id, 'kg', e.target.value)}
+                        onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
                         placeholder="Kg"
                       />
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.grams}
-                        onChange={(e) => handleInputChange(item.id, 'grams', e.target.value)}
+                        onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
                         placeholder="Grams"
                       />
                     </td>
@@ -89,7 +95,8 @@ const MasalaForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default MasalaForm;
+export default MasalaForm
+

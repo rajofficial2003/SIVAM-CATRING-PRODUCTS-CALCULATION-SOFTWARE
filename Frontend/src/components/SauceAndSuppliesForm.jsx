@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+"use client"
 
-const SauceAndSuppliesForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const SauceAndSuppliesForm = forwardRef((props, ref) => {
   const [items, setItems] = useState([
     { id: 1, tamilName: 'சோயா சாஸ்', englishName: 'Soya Sauce', quantity: '' },
     { id: 2, tamilName: 'சில்லி சாஸ்', englishName: 'Chilli Sauce', quantity: '' },
@@ -28,13 +30,17 @@ const SauceAndSuppliesForm = () => {
     { id: 24, tamilName: 'வெள்ளைத் துண்டு', englishName: 'White Cloth', quantity: '' },
     { id: 25, tamilName: 'காப்பாத் துணி', englishName: 'Kappa Cloth', quantity: '' },
     { id: 26, tamilName: 'தென்னந்துடைப்பம்', englishName: 'Coconut Broom', quantity: '' },
-  ]);
+  ])
 
   const handleInputChange = (id, value) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, quantity: value } : item
-    ));
-  };
+    setItems(items.map((item) => (item.id === id ? { ...item, quantity: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.filter((item) => item.quantity)
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -61,7 +67,7 @@ const SauceAndSuppliesForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -70,9 +76,9 @@ const SauceAndSuppliesForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.quantity}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
@@ -87,7 +93,8 @@ const SauceAndSuppliesForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default SauceAndSuppliesForm;
+export default SauceAndSuppliesForm
+

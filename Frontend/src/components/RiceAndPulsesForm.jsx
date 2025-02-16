@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+"use client"
 
-const RiceAndPulsesForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const RiceAndPulsesForm = forwardRef((props, ref) => {
   const [items, setItems] = useState([
     // Pulses Section
-    { 
-      id: 1, 
-      category: 'பருப்பு வகைகள்',
-      categoryEnglish: 'Types of Pulses',
+    {
+      id: 1,
+      category: "பருப்பு வகைகள்",
+      categoryEnglish: "Types of Pulses",
       items: [
         { id: 'p1', tamilName: 'துவரம் பருப்பு', englishName: 'Toor Dal', kg: '', grams: '' },
         { id: 'p2', tamilName: 'பயித்தம் பருப்பு', englishName: 'Green Gram Dal', kg: '', grams: '' },
@@ -14,13 +16,13 @@ const RiceAndPulsesForm = () => {
         { id: 'p4', tamilName: 'பாம்பே கடலை பருப்பு(அரைப்பு)', englishName: 'Bombay Bengal Gram Dal', kg: '', grams: '' },
         { id: 'p5', tamilName: 'பட்டாணிப் பருப்பு', englishName: 'Yellow Peas Dal', kg: '', grams: '' },
         { id: 'p6', tamilName: 'வெள்ளைக் குண்டு உளுந்து', englishName: 'White Urad Dal Whole', kg: '', grams: '' },
-      ]
+      ],
     },
     // Rice Section
     {
       id: 2,
-      category: 'அரிசி வகைகள்',
-      categoryEnglish: 'Types of Rice',
+      category: "அரிசி வகைகள்",
+      categoryEnglish: "Types of Rice",
       items: [
         { id: 'r1', tamilName: 'பொன்னி சாப்பாடு புழுங்கல்', englishName: 'Ponni Boiled Rice', kg: '', grams: '' },
         { id: 'r2', tamilName: 'பொன்னி பச்சை அரிசி', englishName: 'Ponni Raw Rice', kg: '', grams: '' },
@@ -29,27 +31,33 @@ const RiceAndPulsesForm = () => {
         { id: 'r5', tamilName: 'பாஸ்மதி அரிசி', englishName: 'Basmati Rice', kg: '', grams: '' },
         { id: 'r6', tamilName: 'ரோயல் புல்லட்டு அரிசி', englishName: 'Royal Bullet Rice', kg: '', grams: '' },
         { id: 'r7', tamilName: 'உடைத்த அரிசி நெய்', englishName: 'Broken Rice', kg: '', grams: '' },
-      ]
-    }
-  ]);
+      ],
+    },
+  ])
 
   const handleInputChange = (categoryId, itemId, field, value) => {
-    setItems(items.map(category => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          items: category.items.map(item => 
-            item.id === itemId ? { ...item, [field]: value } : item
-          )
-        };
-      }
-      return category;
-    }));
-  };
+    setItems(
+      items.map((category) => {
+        if (category.id === categoryId) {
+          return {
+            ...category,
+            items: category.items.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)),
+          }
+        }
+        return category
+      }),
+    )
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.flatMap((category) => category.items.filter((item) => item.kg || item.grams))
+    },
+  }))
 
   return (
     <div className="container mb-4">
-      {items.map(category => (
+      {items.map((category) => (
         <div key={category.id} className="card shadow-sm mb-4">
           <div className="card-header bg-primary-subtle">
             <h3 className="card-title mb-0">
@@ -77,7 +85,7 @@ const RiceAndPulsesForm = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {category.items.map(item => (
+                  {category.items.map((item) => (
                     <tr key={item.id}>
                       <td>
                         <label className="form-label mb-0">
@@ -86,22 +94,22 @@ const RiceAndPulsesForm = () => {
                         </label>
                       </td>
                       <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
                           min="0"
                           value={item.kg}
-                          onChange={(e) => handleInputChange(category.id, item.id, 'kg', e.target.value)}
+                          onChange={(e) => handleInputChange(category.id, item.id, "kg", e.target.value)}
                           placeholder="Kg"
                         />
                       </td>
                       <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
                           min="0"
                           value={item.grams}
-                          onChange={(e) => handleInputChange(category.id, item.id, 'grams', e.target.value)}
+                          onChange={(e) => handleInputChange(category.id, item.id, "grams", e.target.value)}
                           placeholder="Grams"
                         />
                       </td>
@@ -114,7 +122,8 @@ const RiceAndPulsesForm = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+})
 
-export default RiceAndPulsesForm;
+export default RiceAndPulsesForm
+

@@ -1,7 +1,26 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+"use client"
 
-const PoojaItemsForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+import "bootstrap/dist/css/bootstrap.min.css"
+
+const PoojaItemsForm = forwardRef((props, ref) => {
+  const [items, setItems] = useState([
+    { id: 1, tamilName: "மஞ்சள் தூள்", englishName: "Turmeric Powder", kg: "", grams: "" },
+    { id: 2, tamilName: "குங்குமம்", englishName: "Kumkum", kg: "", grams: "" },
+    { id: 3, tamilName: "கற்பூரம், வத்தி", englishName: "Camphor, Wicks", kg: "", grams: "" },
+    { id: 4, tamilName: "வெற்றிலைபாக்கு", englishName: "Betel Leaves & Nuts", kg: "", grams: "" },
+  ])
+
+  const handleInputChange = (id, field, value) => {
+    setItems(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.filter((item) => item.kg || item.grams)
+    },
+  }))
+
   return (
     <div className="pooja-items-form py-4">
       <div className="container">
@@ -33,102 +52,36 @@ const PoojaItemsForm = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>
-                        <label className="form-label mb-0">
-                          <span className="tamil-text">மஞ்சள் தூள்</span>
-                          <span className="english-text">/ Turmeric Powder</span>
-                        </label>
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Kg"
-                        />
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Grams"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <label className="form-label mb-0">
-                          <span className="tamil-text">குங்குமம்</span>
-                          <span className="english-text">/ Kumkum</span>
-                        </label>
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Kg"
-                        />
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Grams"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <label className="form-label mb-0">
-                          <span className="tamil-text">கற்பூரம், வத்தி</span>
-                          <span className="english-text">/ Camphor, Wicks</span>
-                        </label>
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Kg"
-                        />
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Grams"
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <label className="form-label mb-0">
-                          <span className="tamil-text">வெற்றிலைபாக்கு</span>
-                          <span className="english-text">/ Betel Leaves & Nuts</span>
-                        </label>
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Kg"
-                        />
-                      </td>
-                      <td>
-                        <input 
-                          type="number" 
-                          className="form-control form-control-sm" 
-                          min="0"
-                          placeholder="Grams"
-                        />
-                      </td>
-                    </tr>
+                    {items.map((item) => (
+                      <tr key={item.id}>
+                        <td>
+                          <label className="form-label mb-0">
+                            <span className="tamil-text">{item.tamilName}</span>
+                            <span className="english-text">/ {item.englishName}</span>
+                          </label>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.kg}
+                            onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
+                            placeholder="Kg"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.grams}
+                            onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
+                            placeholder="Grams"
+                          />
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -137,7 +90,8 @@ const PoojaItemsForm = () => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default PoojaItemsForm;
+export default PoojaItemsForm
+

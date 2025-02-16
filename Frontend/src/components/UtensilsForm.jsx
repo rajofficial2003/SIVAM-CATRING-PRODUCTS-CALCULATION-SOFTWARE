@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+"use client"
 
-const UtensilsForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const UtensilsForm = forwardRef((props, ref) => {
   const [items, setItems] = useState([
     { id: 1, tamilName: 'படி டபரா செட் - 3', englishName: 'Padi Dabara Set - 3', count: '' },
     { id: 2, tamilName: 'படி டபரா செட் - 5', englishName: 'Padi Dabara Set - 5', count: '' },
@@ -41,13 +43,17 @@ const UtensilsForm = () => {
     { id: 37, tamilName: 'குழி பணியாரம் சட்டி', englishName: 'Kuzhi Paniyaram Pan', count: '' },
     { id: 38, tamilName: 'விறகு', englishName: 'Firewood', count: '' },
     { id: 39, tamilName: 'மண்ணெண்ணெய்', englishName: 'Kerosene', count: '' },
-  ]);
+  ])
 
   const handleInputChange = (id, value) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, count: value } : item
-    ));
-  };
+    setItems(items.map((item) => (item.id === id ? { ...item, count: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.filter((item) => item.count)
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -74,7 +80,7 @@ const UtensilsForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -83,9 +89,9 @@ const UtensilsForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.count}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
@@ -100,7 +106,8 @@ const UtensilsForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default UtensilsForm;
+export default UtensilsForm
+

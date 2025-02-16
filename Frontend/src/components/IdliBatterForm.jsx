@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
+"use client"
 
-const BatterGrindingForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const IdliBatterForm = forwardRef((props, ref) => {
   const [items, setItems] = useState([
-    { id: 1, tamilName: 'இட்லி குண்டு அரிசி', englishName: 'Idli Rice Grinding', count: '' },
-    { id: 2, tamilName: 'பச்சை அரிசி', englishName: 'Raw Rice Grinding', count: '' },
-    { id: 3, tamilName: 'குண்டு உளுத்தம் பருப்பு', englishName: 'Urad Dal Grinding', count: '' },
-  ]);
+    { id: 1, tamilName: "இட்லி குண்டு அரிசி", englishName: "Idli Rice Grinding", count: "" },
+    { id: 2, tamilName: "பச்சை அரிசி", englishName: "Raw Rice Grinding", count: "" },
+    { id: 3, tamilName: "குண்டு உளுத்தம் பருப்பு", englishName: "Urad Dal Grinding", count: "" },
+  ])
 
   const handleInputChange = (id, value) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, count: value } : item
-    ));
-  };
+    setItems(items.map((item) => (item.id === id ? { ...item, count: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.filter((item) => item.count)
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -38,7 +44,7 @@ const BatterGrindingForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -47,9 +53,9 @@ const BatterGrindingForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.count}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
@@ -64,7 +70,8 @@ const BatterGrindingForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default BatterGrindingForm;
+export default IdliBatterForm
+

@@ -1,32 +1,39 @@
-import React, { useState } from 'react';
+"use client"
 
-const EssenceAndColorForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const EssenceAndColorForm = forwardRef((props, ref) => {
   const [essenceItems, setEssenceItems] = useState([
-    { id: 1, tamilName: 'பைனாப்பிள் எஸ்சென்ஸ்', englishName: 'Pineapple Essence', ml: '' },
-    { id: 2, tamilName: 'ரோஸ் எஸ்சென்ஸ்', englishName: 'Rose Essence', ml: '' },
-    { id: 3, tamilName: 'வெண்ணிலா எஸ்சென்ஸ்', englishName: 'Vanilla Essence', ml: '' },
-    { id: 4, tamilName: 'ஏலக்காய் எஸ்சென்ஸ்', englishName: 'Cardamom Essence', ml: '' },
-  ]);
+    { id: 1, tamilName: "பைனாப்பிள் எஸ்சென்ஸ்", englishName: "Pineapple Essence", ml: "" },
+    { id: 2, tamilName: "ரோஸ் எஸ்சென்ஸ்", englishName: "Rose Essence", ml: "" },
+    { id: 3, tamilName: "வெண்ணிலா எஸ்சென்ஸ்", englishName: "Vanilla Essence", ml: "" },
+    { id: 4, tamilName: "ஏலக்காய் எஸ்சென்ஸ்", englishName: "Cardamom Essence", ml: "" },
+  ])
 
   const [colorPowderItems, setColorPowderItems] = useState([
-    { id: 1, tamilName: 'கேசரி பவுடர்', englishName: 'Kesari Powder', grams: '' },
-    { id: 2, tamilName: 'ஆரஞ்சி பவுடர்', englishName: 'Orange Powder', grams: '' },
-    { id: 3, tamilName: 'லெமன் பவுடர்', englishName: 'Lemon Powder', grams: '' },
-    { id: 4, tamilName: 'பச்சை பவுடர்', englishName: 'Green Powder', grams: '' },
-    { id: 5, tamilName: 'சாக்லேட் பவுடர்', englishName: 'Chocolate Powder', grams: '' },
-  ]);
+    { id: 1, tamilName: "கேசரி பவுடர்", englishName: "Kesari Powder", grams: "" },
+    { id: 2, tamilName: "ஆரஞ்சி பவுடர்", englishName: "Orange Powder", grams: "" },
+    { id: 3, tamilName: "லெமன் பவுடர்", englishName: "Lemon Powder", grams: "" },
+    { id: 4, tamilName: "பச்சை பவுடர்", englishName: "Green Powder", grams: "" },
+    { id: 5, tamilName: "சாக்லேட் பவுடர்", englishName: "Chocolate Powder", grams: "" },
+  ])
 
   const handleEssenceInputChange = (id, value) => {
-    setEssenceItems(essenceItems.map(item => 
-      item.id === id ? { ...item, ml: value } : item
-    ));
-  };
+    setEssenceItems(essenceItems.map((item) => (item.id === id ? { ...item, ml: value } : item)))
+  }
 
   const handleColorPowderInputChange = (id, value) => {
-    setColorPowderItems(colorPowderItems.map(item => 
-      item.id === id ? { ...item, grams: value } : item
-    ));
-  };
+    setColorPowderItems(colorPowderItems.map((item) => (item.id === id ? { ...item, grams: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return {
+        essences: essenceItems.filter((item) => item.ml),
+        colorPowders: colorPowderItems.filter((item) => item.grams),
+      }
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -54,7 +61,7 @@ const EssenceAndColorForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {essenceItems.map(item => (
+                {essenceItems.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -63,9 +70,9 @@ const EssenceAndColorForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.ml}
                         onChange={(e) => handleEssenceInputChange(item.id, e.target.value)}
@@ -104,7 +111,7 @@ const EssenceAndColorForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {colorPowderItems.map(item => (
+                {colorPowderItems.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -113,9 +120,9 @@ const EssenceAndColorForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.grams}
                         onChange={(e) => handleColorPowderInputChange(item.id, e.target.value)}
@@ -130,7 +137,8 @@ const EssenceAndColorForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default EssenceAndColorForm;
+export default EssenceAndColorForm
+

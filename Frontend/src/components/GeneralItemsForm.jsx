@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+"use client"
 
-const GeneralItemsForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const GeneralItemsForm = forwardRef((props, ref) => {
   const [items, setItems] = useState([
     { id: 1, tamilName: 'குண்டு மிளகாய்', englishName: 'Round Chili', kg: '', grams: '' },
     { id: 2, tamilName: 'நீட்டு மிளகாய்', englishName: 'Long Chili', kg: '', grams: '' },
@@ -84,13 +86,17 @@ const GeneralItemsForm = () => {
     { id: 80, tamilName: 'செர்ரி பழம்', englishName: 'Cherry Fruit', kg: '', grams: '' },
     { id: 81, tamilName: 'புருட்டி, புருட்டி 3 கலர்', englishName: 'Purutti, Purutti 3 Colors', kg: '', grams: '' },
     { id: 82, tamilName: 'ஊறுகாய்', englishName: 'Pickle', kg: '', grams: '' },
-  ]);
+  ])
 
   const handleInputChange = (id, field, value) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
+    setItems(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.filter((item) => item.kg || item.grams)
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -121,7 +127,7 @@ const GeneralItemsForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -130,22 +136,22 @@ const GeneralItemsForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.kg}
-                        onChange={(e) => handleInputChange(item.id, 'kg', e.target.value)}
+                        onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
                         placeholder="Kg"
                       />
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.grams}
-                        onChange={(e) => handleInputChange(item.id, 'grams', e.target.value)}
+                        onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
                         placeholder="Grams"
                       />
                     </td>
@@ -157,7 +163,8 @@ const GeneralItemsForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default GeneralItemsForm;
+export default GeneralItemsForm
+

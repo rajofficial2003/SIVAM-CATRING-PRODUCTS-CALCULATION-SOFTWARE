@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+"use client"
 
-const VegetablesForm = () => {
+import { useState, forwardRef, useImperativeHandle } from "react"
+
+const VegetablesForm = forwardRef((props, ref) => {
   const [items, setItems] = useState([
     { id: 1, tamilName: 'முள்ளங்க கத்தரிக்காய்', englishName: 'Thorny Brinjal', kg: '' },
     { id: 2, tamilName: 'முருங்கைக்காய்', englishName: 'Drumstick', kg: '' },
@@ -47,13 +49,17 @@ const VegetablesForm = () => {
     { id: 43, tamilName: 'புதினா', englishName: 'Mint', kg: '' },
     { id: 44, tamilName: 'சாப்பாடு இலை', englishName: 'Banana Leaf', kg: '' },
     { id: 45, tamilName: 'டிபன் இலை', englishName: 'Small Banana Leaf', kg: '' },
-  ]);
+  ])
 
   const handleInputChange = (id, value) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, kg: value } : item
-    ));
-  };
+    setItems(items.map((item) => (item.id === id ? { ...item, kg: value } : item)))
+  }
+
+  useImperativeHandle(ref, () => ({
+    getFormData: () => {
+      return items.filter((item) => item.kg)
+    },
+  }))
 
   return (
     <div className="container mb-4">
@@ -80,7 +86,7 @@ const VegetablesForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item) => (
                   <tr key={item.id}>
                     <td>
                       <label className="form-label mb-0">
@@ -89,9 +95,9 @@ const VegetablesForm = () => {
                       </label>
                     </td>
                     <td>
-                      <input 
-                        type="number" 
-                        className="form-control form-control-sm" 
+                      <input
+                        type="number"
+                        className="form-control form-control-sm"
                         min="0"
                         value={item.kg}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
@@ -106,7 +112,8 @@ const VegetablesForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default VegetablesForm;
+export default VegetablesForm
+
