@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom"
 import { collection, addDoc } from "firebase/firestore"
 import { db } from "./firebase/config"
 import Header from "./components/Header"
@@ -19,6 +20,8 @@ import CustomerDetailsForm from "./components/CustomerDetailsForm"
 import Footer from "./components/Footer"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./App.css"
+import OrdersPage from "./pages/OrdersPage"
+import OrderDetails from "./pages/OrderDetails"
 
 function App() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -84,36 +87,59 @@ function App() {
   }
 
   return (
-    <div className="app-container d-flex flex-column min-vh-100">
-      <Header />
-      <main className="flex-grow-1 py-4">
-        <PoojaItemsForm ref={poojaItemsRef} />
-        <GeneralItemsForm ref={generalItemsRef} />
-        <RiceAndPulsesForm ref={riceAndPulsesRef} />
-        <EssenceAndColorForm ref={essenceAndColorRef} />
-        <OilsAndFloursForm ref={oilsAndFloursRef} />
-        <MasalaForm ref={masalaRef} />
-        <SauceAndSuppliesForm ref={sauceAndSuppliesRef} />
-        <FruitsForm ref={fruitsRef} />
-        <VegetablesForm ref={vegetablesRef} />
-        <UtensilsForm ref={utensilsRef} />
-        <IdliBatterForm ref={idliBatterRef} />
-        <CustomerDetailsForm ref={customerDetailsRef} />
-
-        <div className="container mb-4">
-          {submitStatus.show && (
-            <div className={`alert ${submitStatus.success ? "alert-success" : "alert-danger"} mb-3`}>
-              {submitStatus.message}
+    <Router>
+      <div className="app-container d-flex flex-column min-vh-100">
+        <Header />
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <div className="container">
+            <div className="navbar-nav">
+              <Link className="nav-link" to="/">
+                New Order
+              </Link>
+              <Link className="nav-link" to="/orders">
+                View Orders
+              </Link>
             </div>
-          )}
+          </div>
+        </nav>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <main className="flex-grow-1 py-4">
+                <PoojaItemsForm ref={poojaItemsRef} />
+                <GeneralItemsForm ref={generalItemsRef} />
+                <RiceAndPulsesForm ref={riceAndPulsesRef} />
+                <EssenceAndColorForm ref={essenceAndColorRef} />
+                <OilsAndFloursForm ref={oilsAndFloursRef} />
+                <MasalaForm ref={masalaRef} />
+                <SauceAndSuppliesForm ref={sauceAndSuppliesRef} />
+                <FruitsForm ref={fruitsRef} />
+                <VegetablesForm ref={vegetablesRef} />
+                <UtensilsForm ref={utensilsRef} />
+                <IdliBatterForm ref={idliBatterRef} />
+                <CustomerDetailsForm ref={customerDetailsRef} />
 
-          <button className="btn btn-primary w-100 py-3" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Order"}
-          </button>
-        </div>
-      </main>
-      <Footer />
-    </div>
+                <div className="container mb-4">
+                  {submitStatus.show && (
+                    <div className={`alert ${submitStatus.success ? "alert-success" : "alert-danger"} mb-3`}>
+                      {submitStatus.message}
+                    </div>
+                  )}
+
+                  <button className="btn btn-primary w-100 py-3" onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? "Submitting..." : "Submit Order"}
+                  </button>
+                </div>
+              </main>
+            }
+          />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:orderId" element={<OrderDetails />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   )
 }
 
