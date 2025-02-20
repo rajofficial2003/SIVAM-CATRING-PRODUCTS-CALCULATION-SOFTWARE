@@ -5,11 +5,13 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 import { format } from "date-fns"
 import { useNavigate } from "react-router-dom"
+import { FaEye, FaEdit, FaTrash, FaSearch } from "react-icons/fa"
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState("")
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -54,31 +56,88 @@ const OrdersPage = () => {
     navigate(`/orders/${orderId}/edit`)
   }
 
-  if (loading) return <div>Loading orders...</div>
-  if (error) return <div className="alert alert-danger">{error}</div>
+  const filteredOrders = orders.filter((order) =>
+    order.customerDetails.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
+
+  if (loading)
+    return (
+      <div className="container mt-5 text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading orders...</span>
+        </div>
+      </div>
+    )
+
+  if (error)
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      </div>
+    )
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Orders</h1>
-      {orders.map((order) => (
-        <div key={order.id} className="card mb-3">
-          <div className="card-body">
-            <h5 className="card-title">{order.customerDetails.name}</h5>
-            <p className="card-text">Order Date: {format(new Date(order.customerDetails.orderDate), "dd/MM/yyyy")}</p>
-            <p className="card-text">Function Type: {order.customerDetails.functionType}</p>
-            <p className="card-text">Address: {order.customerDetails.address}</p>
-            <button className="btn btn-info me-2" onClick={() => handleViewDetails(order.id)}>
-              View Details
-            </button>
-            <button className="btn btn-primary me-2" onClick={() => handleEdit(order.id)}>
-              Edit
-            </button>
-            <button className="btn btn-danger" onClick={() => handleDelete(order.id)}>
-              Delete
-            </button>
+      <h1 className="mb-4 text-primary">Orders Management</h1>
+      <div className="card shadow-sm mb-4">
+        <div className="card-body">
+          <div className="input-group mb-3">
+            <span className="input-group-text bg-primary text-white">
+              <FaSearch />
+            </span>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search orders by customer name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
-      ))}
+      </div>
+      {filteredOrders.length === 0 ? (
+        <div className="alert alert-info" role="alert">
+          No orders found.
+        </div>
+      ) : (
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+          {filteredOrders.map((order) => (
+            <div key={order.id} className="col">
+              <div className="card h-100 shadow-sm border-0">
+                <div className="card-header bg-primary text-white">
+                  <h5 className="card-title mb-0">{order.customerDetails.name}</h5>
+                </div>
+                <div className="card-body">
+                  <p className="card-text">
+                    <strong>Order Date:</strong> {format(new Date(order.customerDetails.orderDate), "dd/MM/yyyy")}
+                  </p>
+                  <p className="card-text">
+                    <strong>Function Type:</strong> {order.customerDetails.functionType}
+                  </p>
+                  <p className="card-text">
+                    <strong>Address:</strong> {order.customerDetails.address}
+                  </p>
+                </div>
+                <div className="card-footer bg-white border-0">
+                  <div className="d-flex justify-content-between">
+                    <button className="btn btn-outline-primary btn-sm" onClick={() => handleViewDetails(order.id)}>
+                      <FaEye className="me-1" /> View
+                    </button>
+                    <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEdit(order.id)}>
+                      <FaEdit className="me-1" /> Edit
+                    </button>
+                    <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(order.id)}>
+                      <FaTrash className="me-1" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

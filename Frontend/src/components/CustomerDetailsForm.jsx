@@ -1,14 +1,20 @@
 "use client"
 
-import { forwardRef, useImperativeHandle, useState } from "react"
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react"
 
-const CustomerDetailsForm = forwardRef((props, ref) => {
+const CustomerDetailsForm = forwardRef(({ initialData }, ref) => {
   const [customerDetails, setCustomerDetails] = useState({
     name: "",
     orderDate: "",
     functionType: "",
     address: "",
   })
+
+  useEffect(() => {
+    if (initialData) {
+      setCustomerDetails(initialData)
+    }
+  }, [initialData])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target

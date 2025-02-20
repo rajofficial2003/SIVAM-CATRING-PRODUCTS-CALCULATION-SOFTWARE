@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useState } from "react"
-import { collection, addDoc } from "firebase/firestore"
-import { useNavigate } from "react-router-dom"
+import { useRef, useState, useEffect } from "react"
+import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore"
+import { useNavigate, useParams } from "react-router-dom"
 import { db } from "../firebase/config"
 import CustomerDetailsForm from "../components/CustomerDetailsForm"
 import PoojaItemsForm from "../components/PoojaItemsForm"
@@ -20,7 +20,10 @@ import IdliBatterForm from "../components/IdliBatterForm"
 const AddOrder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState({ show: false, success: false, message: "" })
+  const [isLoading, setIsLoading] = useState(false)
+  const [existingOrder, setExistingOrder] = useState(null)
   const navigate = useNavigate()
+  const { orderId } = useParams()
 
   // Refs for all forms
   const customerDetailsRef = useRef()
@@ -35,6 +38,30 @@ const AddOrder = () => {
   const vegetablesRef = useRef()
   const utensilsRef = useRef()
   const idliBatterRef = useRef()
+
+  useEffect(() => {
+    if (orderId) {
+      fetchExistingOrder()
+    }
+  }, [orderId])
+
+  const fetchExistingOrder = async () => {
+    setIsLoading(true)
+    try {
+      const orderDoc = await getDoc(doc(db, "Orders", orderId))
+      if (orderDoc.exists()) {
+        setExistingOrder({ id: orderDoc.id, ...orderDoc.data() })
+      } else {
+        console.error("Order not found")
+        // Handle the case when the order is not found
+      }
+    } catch (error) {
+      console.error("Error fetching order:", error)
+      // Handle the error appropriately
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleSubmit = async () => {
     try {
@@ -58,13 +85,20 @@ const AddOrder = () => {
         idliBatter: idliBatterRef.current?.getFormData() || [],
       }
 
-      // Submit to Firestore
-      const docRef = await addDoc(collection(db, "Orders"), orderData)
+      let docRef
+      if (orderId) {
+        // Update existing order
+        await updateDoc(doc(db, "Orders", orderId), orderData)
+        docRef = { id: orderId }
+      } else {
+        // Submit new order to Firestore
+        docRef = await addDoc(collection(db, "Orders"), orderData)
+      }
 
       setSubmitStatus({
         show: true,
         success: true,
-        message: "Order submitted successfully!",
+        message: orderId ? "Order updated successfully!" : "Order submitted successfully!",
       })
 
       // Redirect to the order details page
@@ -81,23 +115,27 @@ const AddOrder = () => {
     }
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div className="container-fluid py-4">
-      <h1 className="mb-4">Add New Order</h1>
+      <h1 className="mb-4">{orderId ? "Edit Order" : "Add New Order"}</h1>
 
-      <CustomerDetailsForm ref={customerDetailsRef} />
+      <CustomerDetailsForm ref={customerDetailsRef} initialData={existingOrder?.customerDetails} />
 
-      <PoojaItemsForm ref={poojaItemsRef} />
-      <GeneralItemsForm ref={generalItemsRef} />
-      <RiceAndPulsesForm ref={riceAndPulsesRef} />
-      <EssenceAndColorForm ref={essenceAndColorRef} />
-      <OilsAndFloursForm ref={oilsAndFloursRef} />
-      <MasalaForm ref={masalaRef} />
-      <SauceAndSuppliesForm ref={sauceAndSuppliesRef} />
-      <FruitsForm ref={fruitsRef} />
-      <VegetablesForm ref={vegetablesRef} />
-      <UtensilsForm ref={utensilsRef} />
-      <IdliBatterForm ref={idliBatterRef} />
+      <PoojaItemsForm ref={poojaItemsRef} initialData={existingOrder?.poojaItems} />
+      <GeneralItemsForm ref={generalItemsRef} initialData={existingOrder?.generalItems} />
+      <RiceAndPulsesForm ref={riceAndPulsesRef} initialData={existingOrder?.riceAndPulses} />
+      <EssenceAndColorForm ref={essenceAndColorRef} initialData={existingOrder?.essenceAndColor} />
+      <OilsAndFloursForm ref={oilsAndFloursRef} initialData={existingOrder?.oilsAndFlours} />
+      <MasalaForm ref={masalaRef} initialData={existingOrder?.masala} />
+      <SauceAndSuppliesForm ref={sauceAndSuppliesRef} initialData={existingOrder?.sauceAndSupplies} />
+      <FruitsForm ref={fruitsRef} initialData={existingOrder?.fruits} />
+      <VegetablesForm ref={vegetablesRef} initialData={existingOrder?.vegetables} />
+      <UtensilsForm ref={utensilsRef} initialData={existingOrder?.utensils} />
+      <IdliBatterForm ref={idliBatterRef} initialData={existingOrder?.idliBatter} />
 
       <div className="mb-4">
         {submitStatus.show && (
@@ -107,7 +145,7 @@ const AddOrder = () => {
         )}
 
         <button className="btn btn-primary w-100 py-3" onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit Order"}
+          {isSubmitting ? "Submitting..." : orderId ? "Update Order" : "Submit Order"}
         </button>
       </div>
     </div>
