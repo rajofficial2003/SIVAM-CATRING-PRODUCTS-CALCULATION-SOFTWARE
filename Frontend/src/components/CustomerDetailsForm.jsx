@@ -8,6 +8,7 @@ const CustomerDetailsForm = forwardRef(({ initialData }, ref) => {
     orderDate: "",
     functionType: "",
     address: "",
+    mobileNumber: "", // Added mobile number field
   })
 
   useEffect(() => {
@@ -80,6 +81,21 @@ const CustomerDetailsForm = forwardRef(({ initialData }, ref) => {
                 id="functionType"
                 name="functionType"
                 value={customerDetails.functionType}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="col-md-6">
+              <label htmlFor="mobileNumber" className="form-label">
+                <span className="tamil-text">கைபேசி எண்</span>
+                <span className="english-text">/ Mobile Number</span>
+              </label>
+              <input
+                type="tel"
+                className="form-control"
+                id="mobileNumber"
+                name="mobileNumber"
+                value={customerDetails.mobileNumber}
                 onChange={handleInputChange}
                 required
               />

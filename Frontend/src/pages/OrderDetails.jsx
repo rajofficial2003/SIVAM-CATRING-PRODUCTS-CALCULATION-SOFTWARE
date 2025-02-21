@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
+import { FaWhatsapp } from "react-icons/fa"
 
 const OrderDetails = () => {
   const { orderId } = useParams()
@@ -12,7 +13,7 @@ const OrderDetails = () => {
 
   useEffect(() => {
     fetchOrderDetails()
-  }, []) // Updated useEffect dependency array
+  }, [])
 
   const fetchOrderDetails = async () => {
     try {
@@ -66,6 +67,52 @@ const OrderDetails = () => {
     )
   }
 
+  const sendToWhatsApp = () => {
+    if (!order || !order.customerDetails || !order.customerDetails.mobileNumber) {
+      alert("Mobile number not available")
+      return
+    }
+
+    const phoneNumber = order.customerDetails.mobileNumber
+    let message = `Order Details for ${order.customerDetails.name}:\n\n`
+    message += `Order Date: ${order.customerDetails.orderDate}\n`
+    message += `Function Type: ${order.customerDetails.functionType}\n\n`
+
+    const addItemsToMessage = (items, title) => {
+      if (items && items.length > 0) {
+        message += `${title}:\n`
+        items.forEach((item) => {
+          message += `${item.tamilName} / ${item.englishName}: `
+          if (item.kg) message += `${item.kg} kg `
+          if (item.grams) message += `${item.grams} g `
+          if (item.liters) message += `${item.liters} L `
+          if (item.ml) message += `${item.ml} ml `
+          if (item.count) message += `${item.count} `
+          message += "\n"
+        })
+        message += "\n"
+      }
+    }
+
+    addItemsToMessage(order.poojaItems, "Pooja Items")
+    addItemsToMessage(order.generalItems, "General Items")
+    addItemsToMessage(order.riceAndPulses, "Rice and Pulses")
+    addItemsToMessage(order.essenceAndColor?.essences, "Essence Types")
+    addItemsToMessage(order.essenceAndColor?.colorPowders, "Color Powder Types")
+    addItemsToMessage(order.oilsAndFlours?.oils, "Oil Types")
+    addItemsToMessage(order.oilsAndFlours?.flours, "Flour Types")
+    addItemsToMessage(order.masala, "Masala Items")
+    addItemsToMessage(order.sauceAndSupplies, "Sauce and Supplies")
+    addItemsToMessage(order.fruits, "Fruits")
+    addItemsToMessage(order.vegetables, "Vegetables")
+    addItemsToMessage(order.utensils, "Utensils")
+    addItemsToMessage(order.idliBatter, "Idli Batter")
+
+    const encodedMessage = encodeURIComponent(message)
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
+    window.open(whatsappUrl, "_blank")
+  }
+
   if (loading) {
     return (
       <div className="container py-4">
@@ -93,9 +140,14 @@ const OrderDetails = () => {
     <div className="container-fluid py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Order Details</h1>
-        <Link to="/orders" className="btn btn-primary">
-          Back to Orders
-        </Link>
+        <div>
+          <button onClick={sendToWhatsApp} className="btn btn-success me-2">
+            <FaWhatsapp className="me-2" /> Send to WhatsApp
+          </button>
+          <Link to="/orders" className="btn btn-primary">
+            Back to Orders
+          </Link>
+        </div>
       </div>
 
       {/* Customer Details */}
@@ -109,12 +161,15 @@ const OrderDetails = () => {
               <strong>Name:</strong> {order.customerDetails?.name || "-"}
             </div>
             <div className="col-md-3">
-              <strong>Order Date:</strong> {order.timestamp?.toLocaleDateString() || "-"}
+              <strong>Order Date:</strong> {order.customerDetails?.orderDate || "-"}
             </div>
             <div className="col-md-3">
               <strong>Function Type:</strong> {order.customerDetails?.functionType || "-"}
             </div>
             <div className="col-md-3">
+              <strong>Mobile Number:</strong> {order.customerDetails?.mobileNumber || "-"}
+            </div>
+            <div className="col-md-12 mt-2">
               <strong>Address:</strong> {order.customerDetails?.address || "-"}
             </div>
           </div>
