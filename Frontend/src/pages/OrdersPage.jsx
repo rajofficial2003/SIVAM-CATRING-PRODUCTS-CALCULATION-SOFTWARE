@@ -1,28 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 import { format } from "date-fns"
 import { useNavigate } from "react-router-dom"
-import { FaEye, FaEdit, FaTrash, FaSearch, FaCalendar } from "react-icons/fa"
+import { FaEye, FaEdit, FaTrash, FaSearch, FaCalendar, FaUtensils } from "react-icons/fa"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loadingOrders, setLoadingOrders] = useState([])
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [filterDate, setFilterDate] = useState(null)
   const [filterMonth, setFilterMonth] = useState("")
   const navigate = useNavigate()
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const ordersCollection = collection(db, "Orders")
       const ordersSnapshot = await getDocs(ordersCollection)
@@ -31,20 +27,39 @@ const OrdersPage = () => {
         ...doc.data(),
         timestamp: doc.data().timestamp.toDate(),
       }))
-      setOrders(ordersList)
-      setLoading(false)
+
+      setLoadingOrders(new Array(ordersList.length).fill(true))
+      setOrders([])
+
+      ordersList.forEach((order, index) => {
+        setTimeout(() => {
+          setOrders((prevOrders) => {
+            const newOrders = [...prevOrders]
+            newOrders[index] = order
+            return newOrders
+          })
+          setLoadingOrders((prevLoading) => {
+            const newLoading = [...prevLoading]
+            newLoading[index] = false
+            return newLoading
+          })
+        }, index * 100)
+      })
     } catch (err) {
       console.error("Error fetching orders:", err)
       setError("Failed to load orders. Please try again.")
-      setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchOrders()
+  }, [fetchOrders])
 
   const handleDelete = async (orderId) => {
     if (window.confirm("Are you sure you want to delete this order?")) {
       try {
         await deleteDoc(doc(db, "Orders", orderId))
-        setOrders(orders.filter((order) => order.id !== orderId))
+        setOrders((prevOrders) => prevOrders.filter((order) => order && order.id !== orderId))
       } catch (err) {
         console.error("Error deleting order:", err)
         setError("Failed to delete order. Please try again.")
@@ -61,6 +76,7 @@ const OrdersPage = () => {
   }
 
   const filteredOrders = orders.filter((order) => {
+    if (!order) return false
     const searchTermLower = searchTerm.toLowerCase()
     const nameMatch = order.customerDetails.name.toLowerCase().includes(searchTermLower)
     const addressMatch = order.customerDetails.address.toLowerCase().includes(searchTermLower)
@@ -73,15 +89,6 @@ const OrdersPage = () => {
       : true
     return (nameMatch || addressMatch || functionTypeMatch) && dateMatch && monthMatch
   })
-
-  if (loading)
-    return (
-      <div className="container mt-5 text-center">
-        <div className="spinner-border" style={{ color: "#d33131" }} role="status">
-          <span className="visually-hidden">Loading orders...</span>
-        </div>
-      </div>
-    )
 
   if (error)
     return (
@@ -147,7 +154,7 @@ const OrdersPage = () => {
           </div>
         </div>
       </div>
-      {filteredOrders.length === 0 ? (
+      {filteredOrders.length === 0 && loadingOrders.every((loading) => !loading) ? (
         <div
           className="alert"
           style={{ backgroundColor: "white", color: "#d33131", border: "1px solid #d33131" }}
@@ -157,53 +164,85 @@ const OrdersPage = () => {
         </div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {filteredOrders.map((order) => (
+          {filteredOrders.map((order, index) => (
             <div key={order.id} className="col">
-              <div className="card h-100 shadow-sm border-0">
-                <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
-                  <h5 className="card-title mb-0">{order.customerDetails.name}</h5>
-                </div>
-                <div className="card-body" style={{ backgroundColor: "white" }}>
-                  <p className="card-text">
-                    <strong>Order Date:</strong> {format(new Date(order.customerDetails.orderDate), "dd/MM/yyyy")}
-                  </p>
-                  <p className="card-text">
-                    <strong>Function Type:</strong> {order.customerDetails.functionType}
-                  </p>
-                  <p className="card-text">
-                    <strong>Address:</strong> {order.customerDetails.address}
-                  </p>
-                </div>
-                <div className="card-footer" style={{ backgroundColor: "white", borderTop: "1px solid #d33131" }}>
-                  <div className="d-flex justify-content-between">
-                    <button
-                      className="btn btn-sm"
-                      style={{ backgroundColor: "#d33131", color: "white" }}
-                      onClick={() => handleViewDetails(order.id)}
-                    >
-                      <FaEye className="me-1" /> View
-                    </button>
-                    <button
-                      className="btn btn-sm"
-                      style={{ backgroundColor: "white", color: "#d33131", borderColor: "#d33131" }}
-                      onClick={() => handleEdit(order.id)}
-                    >
-                      <FaEdit className="me-1" /> Edit
-                    </button>
-                    <button
-                      className="btn btn-sm"
-                      style={{ backgroundColor: "#d33131", color: "white" }}
-                      onClick={() => handleDelete(order.id)}
-                    >
-                      <FaTrash className="me-1" /> Delete
-                    </button>
+              {loadingOrders[index] ? (
+                <div className="card h-100 shadow-sm border-0 d-flex justify-content-center align-items-center">
+                  <div className="loading-animation">
+                    <FaUtensils className="loading-icon" />
+                    <span className="loading-text">Loading order...</span>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+                    <h5 className="card-title mb-0">{order.customerDetails.name}</h5>
+                  </div>
+                  <div className="card-body" style={{ backgroundColor: "white" }}>
+                    <p className="card-text">
+                      <strong>Order Date:</strong> {format(new Date(order.customerDetails.orderDate), "dd/MM/yyyy")}
+                    </p>
+                    <p className="card-text">
+                      <strong>Function Type:</strong> {order.customerDetails.functionType}
+                    </p>
+                    <p className="card-text">
+                      <strong>Address:</strong> {order.customerDetails.address}
+                    </p>
+                  </div>
+                  <div className="card-footer" style={{ backgroundColor: "white", borderTop: "1px solid #d33131" }}>
+                    <div className="d-flex justify-content-between">
+                      <button
+                        className="btn btn-sm"
+                        style={{ backgroundColor: "#d33131", color: "white" }}
+                        onClick={() => handleViewDetails(order.id)}
+                      >
+                        <FaEye className="me-1" /> View
+                      </button>
+                      <button
+                        className="btn btn-sm"
+                        style={{ backgroundColor: "white", color: "#d33131", borderColor: "#d33131" }}
+                        onClick={() => handleEdit(order.id)}
+                      >
+                        <FaEdit className="me-1" /> Edit
+                      </button>
+                      <button
+                        className="btn btn-sm"
+                        style={{ backgroundColor: "#d33131", color: "white" }}
+                        onClick={() => handleDelete(order.id)}
+                      >
+                        <FaTrash className="me-1" /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
+      <style jsx>{`
+        .loading-animation {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
+        .loading-icon {
+          font-size: 2rem;
+          color: #d33131;
+          animation: spin 2s linear infinite;
+        }
+        .loading-text {
+          margin-top: 0.5rem;
+          color: #d33131;
+          font-weight: bold;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }

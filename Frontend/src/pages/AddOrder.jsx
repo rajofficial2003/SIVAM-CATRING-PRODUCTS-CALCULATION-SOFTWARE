@@ -120,8 +120,8 @@ const AddOrder = () => {
   }
 
   return (
-    <div className="container-fluid py-4">
-      <h1 className="mb-4" style={{ color: "black" }}>
+    <div className="container py-4">
+      <h1 className="mb-4 text-center" style={{ color: "black" }}>
         {orderId ? "Edit Order" : "Add New Order"}
       </h1>
 
@@ -139,7 +139,7 @@ const AddOrder = () => {
       <UtensilsForm ref={utensilsRef} initialData={existingOrder?.utensils} />
       <IdliBatterForm ref={idliBatterRef} initialData={existingOrder?.idliBatter} />
 
-      <div className="mb-4">
+      <div className="container mb-4">
         {submitStatus.show && (
           <div className={`alert ${submitStatus.success ? "alert-success" : "alert-danger"} mb-3`}>
             {submitStatus.message}

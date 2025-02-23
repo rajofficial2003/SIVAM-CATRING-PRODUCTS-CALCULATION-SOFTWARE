@@ -1,43 +1,115 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  background: #e6e6e6;
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+main {
+  flex-grow: 1;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.navbar {
+  padding: 0.5rem 0;
+}
+
+.navbar-nav {
+  gap: 0.5rem;
+}
+
+.navbar .nav-link.premium-btn {
+  color: #333;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border: 1px solid #e0e0e0;
+  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 200px;
+}
+
+.navbar .nav-link.premium-btn:hover {
+  background: linear-gradient(145deg, #f0f0f0, #ffffff);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .nav-link.premium-btn.active {
+  color: #ffffff;
+  background: linear-gradient(145deg, #d33131, #b52020);
+  border-color: #d33131;
+  box-shadow: 0 2px 4px rgba(211, 49, 49, 0.3);
+}
+
+.btn-primary {
+  background-color: #d33131;
+  border-color: #d33131;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #b52020;
+  border-color: #b52020;
+}
+
+.card-header {
+  background-color: #d33131;
+  color: white;
+}
+
+.table thead {
+  background-color: #f8f9fa;
+}
+
+.tamil-text {
+  font-family: "Latha", "Arial", sans-serif;
+}
+
+.english-text {
+  font-family: "Arial", sans-serif;
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #d33131, #b52020);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 10px rgba(211, 49, 49, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(211, 49, 49, 0.4);
+}
+
+@media (max-width: 767px) {
+  .navbar-nav {
+    flex-direction: row !important;
+    justify-content: center;
+    width: 100%;
   }
-  to {
-    transform: rotate(360deg);
+
+  .navbar .nav-link.premium-btn {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}

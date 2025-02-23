@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, forwardRef, useImperativeHandle } from "react"
+import { useState, forwardRef, useImperativeHandle, useEffect } from "react"
 
-const EssenceAndColorForm = forwardRef((props, ref) => {
+const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
   const [essenceItems, setEssenceItems] = useState([
     { id: 1, tamilName: "பைனாப்பிள் எஸ்சென்ஸ்", englishName: "Pineapple Essence", ml: "" },
     { id: 2, tamilName: "ரோஸ் எஸ்சென்ஸ்", englishName: "Rose Essence", ml: "" },
@@ -17,6 +17,25 @@ const EssenceAndColorForm = forwardRef((props, ref) => {
     { id: 4, tamilName: "பச்சை பவுடர்", englishName: "Green Powder", grams: "" },
     { id: 5, tamilName: "சாக்லேட் பவுடர்", englishName: "Chocolate Powder", grams: "" },
   ])
+
+  useEffect(() => {
+    if (initialData && initialData.essences) {
+      setEssenceItems((prevItems) =>
+        prevItems.map((item) => {
+          const matchingItem = initialData.essences.find((dataItem) => dataItem.id === item.id)
+          return matchingItem ? { ...item, ...matchingItem } : item
+        }),
+      )
+    }
+    if (initialData && initialData.colorPowders) {
+      setColorPowderItems((prevItems) =>
+        prevItems.map((item) => {
+          const matchingItem = initialData.colorPowders.find((dataItem) => dataItem.id === item.id)
+          return matchingItem ? { ...item, ...matchingItem } : item
+        }),
+      )
+    }
+  }, [initialData])
 
   const handleEssenceInputChange = (id, value) => {
     setEssenceItems(essenceItems.map((item) => (item.id === id ? { ...item, ml: value } : item)))
@@ -39,24 +58,24 @@ const EssenceAndColorForm = forwardRef((props, ref) => {
     <div className="container mb-4">
       {/* Essence Types Section */}
       <div className="card shadow-sm mb-4">
-        <div className="card-header bg-primary-subtle">
+        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">எஸ்சென்ஸ் வகைகள்</span>
-            <span className="english-text">/ Essence Types</span>
+            <span className="english-text"> / Essence Types</span>
           </h3>
         </div>
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-bordered table-hover mb-0">
-              <thead className="sticky-top bg-light">
+              <thead className="sticky-top" style={{ backgroundColor: "#f8f9fa" }}>
                 <tr>
                   <th className="item-name-header">
                     <span className="tamil-text">பொருட்கள்</span>
-                    <span className="english-text">/ Items</span>
+                    <span className="english-text"> / Items</span>
                   </th>
                   <th className="measurement-header">
                     <span className="tamil-text">மில்லி</span>
-                    <span className="english-text">/ ml</span>
+                    <span className="english-text"> / ml</span>
                   </th>
                 </tr>
               </thead>
@@ -66,7 +85,7 @@ const EssenceAndColorForm = forwardRef((props, ref) => {
                     <td>
                       <label className="form-label mb-0">
                         <span className="tamil-text">{item.tamilName}</span>
-                        <span className="english-text">/ {item.englishName}</span>
+                        <span className="english-text"> / {item.englishName}</span>
                       </label>
                     </td>
                     <td>
@@ -89,24 +108,24 @@ const EssenceAndColorForm = forwardRef((props, ref) => {
 
       {/* Color Powder Types Section */}
       <div className="card shadow-sm">
-        <div className="card-header bg-primary-subtle">
+        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">கலர் பவுடர் வகைகள்</span>
-            <span className="english-text">/ Color Powder Types</span>
+            <span className="english-text"> / Color Powder Types</span>
           </h3>
         </div>
         <div className="card-body p-0">
           <div className="table-responsive">
             <table className="table table-bordered table-hover mb-0">
-              <thead className="sticky-top bg-light">
+              <thead className="sticky-top" style={{ backgroundColor: "#f8f9fa" }}>
                 <tr>
                   <th className="item-name-header">
                     <span className="tamil-text">பொருட்கள்</span>
-                    <span className="english-text">/ Items</span>
+                    <span className="english-text"> / Items</span>
                   </th>
                   <th className="measurement-header">
                     <span className="tamil-text">கிராம்</span>
-                    <span className="english-text">/ Grams</span>
+                    <span className="english-text"> / Grams</span>
                   </th>
                 </tr>
               </thead>
@@ -116,7 +135,7 @@ const EssenceAndColorForm = forwardRef((props, ref) => {
                     <td>
                       <label className="form-label mb-0">
                         <span className="tamil-text">{item.tamilName}</span>
-                        <span className="english-text">/ {item.englishName}</span>
+                        <span className="english-text"> / {item.englishName}</span>
                       </label>
                     </td>
                     <td>
@@ -139,6 +158,8 @@ const EssenceAndColorForm = forwardRef((props, ref) => {
     </div>
   )
 })
+
+EssenceAndColorForm.displayName = "EssenceAndColorForm"
 
 export default EssenceAndColorForm
 
