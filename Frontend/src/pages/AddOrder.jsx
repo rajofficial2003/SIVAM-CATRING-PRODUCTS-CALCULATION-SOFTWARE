@@ -121,7 +121,9 @@ const AddOrder = () => {
 
   return (
     <div className="container-fluid py-4">
-      <h1 className="mb-4">{orderId ? "Edit Order" : "Add New Order"}</h1>
+      <h1 className="mb-4" style={{ color: "black" }}>
+        {orderId ? "Edit Order" : "Add New Order"}
+      </h1>
 
       <CustomerDetailsForm ref={customerDetailsRef} initialData={existingOrder?.customerDetails} />
 
@@ -144,7 +146,19 @@ const AddOrder = () => {
           </div>
         )}
 
-        <button className="btn btn-primary w-100 py-3" onClick={handleSubmit} disabled={isSubmitting}>
+        <button
+          className="btn w-100 py-3"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          style={{
+            backgroundColor: "#d33131",
+            color: "white",
+            border: "none",
+            transition: "background-color 0.3s",
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#b52020")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#d33131")}
+        >
           {isSubmitting ? "Submitting..." : orderId ? "Update Order" : "Submit Order"}
         </button>
       </div>
