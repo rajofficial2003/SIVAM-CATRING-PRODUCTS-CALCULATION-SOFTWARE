@@ -4,12 +4,18 @@ import { useState, useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
-import { FaEdit, FaArrowLeft } from "react-icons/fa"
+import { FaEdit, FaArrowLeft, FaDownload } from "react-icons/fa"
+import jsPDF from "jspdf"
+import "jspdf-autotable"
+
+// Import the Noto Sans Tamil font
+import notoSansTamilUrl from "../fonts/NotoSansTamil-Regular.ttf"
 
 const OrderDetails = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [generating, setGenerating] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -76,6 +82,82 @@ const OrderDetails = () => {
     )
   }
 
+  const generatePDF = async () => {
+    setGenerating(true)
+    try {
+      const doc = new jsPDF()
+
+      // Load and add the Noto Sans Tamil font to the PDF
+      const fontResponse = await fetch(notoSansTamilUrl)
+      const fontArrayBuffer = await fontResponse.arrayBuffer()
+      doc.addFileToVFS("NotoSansTamil-Regular.ttf", fontArrayBuffer)
+      doc.addFont("NotoSansTamil-Regular.ttf", "NotoSansTamil", "normal")
+
+      // Set the default font to Noto Sans Tamil
+      doc.setFont("NotoSansTamil")
+
+      doc.setFontSize(18)
+      doc.text("Order Details", 14, 22)
+
+      doc.setFontSize(12)
+      doc.text(`Order ID: ${order.id}`, 14, 32)
+      doc.text(`Customer Name: ${order.customerDetails.name}`, 14, 40)
+      doc.text(`Order Date: ${order.customerDetails.orderDate}`, 14, 48)
+      doc.text(`Function Type: ${order.customerDetails.functionType}`, 14, 56)
+      doc.text(`Mobile Number: ${order.customerDetails.mobileNumber}`, 14, 64)
+      doc.text(`Address: ${order.customerDetails.address}`, 14, 72)
+
+      let yPos = 90
+
+      const addItemsTable = (items, title, columns) => {
+        if (items && items.length > 0) {
+          doc.setFontSize(14)
+          doc.text(title, 14, yPos)
+          yPos += 10
+
+          const tableData = items.map((item) => [
+            `${item.tamilName} / ${item.englishName}`,
+            ...columns.map((col) => item[col.toLowerCase().replace(/ /g, "")] || "-"),
+          ])
+
+          doc.autoTable({
+            head: [["Item", ...columns]],
+            body: tableData,
+            startY: yPos,
+            styles: {
+              font: "NotoSansTamil",
+              fontSize: 10,
+            },
+            columnStyles: { 0: { cellWidth: 80 } },
+          })
+
+          yPos = doc.lastAutoTable.finalY + 15
+        }
+      }
+
+      addItemsTable(order.poojaItems, "Pooja Items", ["Kg", "Grams"])
+      addItemsTable(order.generalItems, "General Items", ["Kg", "Grams"])
+      addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
+      addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
+      addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Grams"])
+      addItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Liters", "ML"])
+      addItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg", "Grams"])
+      addItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])
+      addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity"])
+      addItemsTable(order.fruits, "Fruits", ["Kg", "Grams"])
+      addItemsTable(order.vegetables, "Vegetables", ["Kg"])
+      addItemsTable(order.utensils, "Utensils", ["Count"])
+      addItemsTable(order.idliBatter, "Idli Batter", ["Count"])
+
+      doc.save(`Order_${order.id}.pdf`)
+    } catch (error) {
+      console.error("Error generating PDF:", error)
+      alert("An error occurred while generating the PDF. Please try again.")
+    } finally {
+      setGenerating(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="container mt-5 text-center">
@@ -105,7 +187,7 @@ const OrderDetails = () => {
 
   return (
     <div className="container py-5">
-      <div className="d-flex flex-md-row justify-content-between align-items-center mb-4">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
         <div className="d-flex align-items-center mb-3 mb-md-0">
           <button
             onClick={() => navigate("/orders")}
@@ -116,14 +198,27 @@ const OrderDetails = () => {
           </button>
           <h1 style={{ color: "black", margin: 0 }}>Order Details</h1>
         </div>
-        <div>
-          <Link
-            to={`/orders/${orderId}/edit`}
-            className="btn"
-            style={{ backgroundColor: "#d33131", color: "white", width: "100%" }}
-          >
+        <div className="d-flex gap-2">
+          <Link to={`/orders/${orderId}/edit`} className="btn" style={{ backgroundColor: "#d33131", color: "white" }}>
             <FaEdit className="me-2" /> Edit Order
           </Link>
+          <button
+            onClick={generatePDF}
+            className="btn"
+            style={{ backgroundColor: "#d33131", color: "white" }}
+            disabled={generating}
+          >
+            {generating ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Generating...
+              </>
+            ) : (
+              <>
+                <FaDownload className="me-2" /> Download PDF
+              </>
+            )}
+          </button>
         </div>
       </div>
 

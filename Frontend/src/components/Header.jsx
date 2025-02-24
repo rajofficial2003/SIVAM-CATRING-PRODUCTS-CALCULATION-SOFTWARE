@@ -41,7 +41,7 @@ const Header = () => {
       <div className="container">
         <div className="row align-items-center">
           <div className="col-md-2 text-center text-md-start">
-            <img src="./assets/anamalayar.png" alt="Business Logo" style={logoStyle} />
+            <img src="./Frame 2.png" alt="Business Logo" style={logoStyle} />
           </div>
           <div className="col-md-8 text-center mb-3 mb-md-0">
             <h1 style={businessNameStyle}>சிவம் கேட்டரிங்</h1>

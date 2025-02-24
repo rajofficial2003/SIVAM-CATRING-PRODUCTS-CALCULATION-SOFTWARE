@@ -4,14 +4,14 @@ import { useState, forwardRef, useImperativeHandle, useEffect } from "react"
 
 const UtensilsForm = forwardRef(({ initialData }, ref) => {
   const [items, setItems] = useState([
-    { id: 1, tamilName: "படி டபரா செட் - 3", englishName: "Padi Dabara Set - 3", count: "" },
-    { id: 2, tamilName: "படி டபரா செட் - 5", englishName: "Padi Dabara Set - 5", count: "" },
-    { id: 3, tamilName: "படி டபரா செட் - 7", englishName: "Padi Dabara Set - 7", count: "" },
-    { id: 4, tamilName: "படி டபரா செட் - 10", englishName: "Padi Dabara Set - 10", count: "" },
-    { id: 5, tamilName: "படி டபரா செட் - 12", englishName: "Padi Dabara Set - 12", count: "" },
-    { id: 6, tamilName: "படி டபரா செட் - 15", englishName: "Padi Dabara Set - 15", count: "" },
-    { id: 7, tamilName: "படி டபரா செட் - 20", englishName: "Padi Dabara Set - 20", count: "" },
-    { id: 8, tamilName: "படி டபரா செட் - 25", englishName: "Padi Dabara Set - 25", count: "" },
+    { id: 1, tamilName: "5KG டபரா செட்", englishName: "5KG Dabara Set", count: "" },
+    { id: 2, tamilName: "8KG டபரா செட்", englishName: "8KG Dabara Set", count: "" },
+    { id: 3, tamilName: "10KG டபரா செட்", englishName: "10KG Dabara Set", count: "" },
+    { id: 4, tamilName: "15KG டபரா செட்", englishName: "15KG Dabara Set", count: "" },
+    { id: 5, tamilName: "20KG டபரா செட்", englishName: "20KG Dabara Set", count: "" },
+    { id: 6, tamilName: "25KG டபரா செட்", englishName: "25KG Dabara Set", count: "" },
+    { id: 7, tamilName: "30KG டபரா செட்", englishName: "30KG Dabara Set", count: "" },
+    { id: 8, tamilName: "50KG டபரா செட்", englishName: "50KG Dabara Set", count: "" },
     { id: 9, tamilName: "மைசூர் பாக் தட்டு", englishName: "Mysore Pak Plate", count: "" },
     { id: 10, tamilName: "இட்லி பானை (200, 150, 100)", englishName: "Idli Pot (200, 150, 100)", count: "" },
     { id: 11, tamilName: "அலுமினிய அன்ன கூடை", englishName: "Aluminum Anna Basket", count: "" },
