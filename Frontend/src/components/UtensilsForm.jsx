@@ -33,7 +33,7 @@ const UtensilsForm = forwardRef(({ initialData }, ref) => {
     { id: 27, tamilName: "1 கேஸ் அடுப்பு", englishName: "1 Gas Stove", count: "" },
     { id: 28, tamilName: "டைனிங் டேபிள்", englishName: "Dining Table", count: "" },
     { id: 29, tamilName: "பிளாஸ்டிக் சேர்", englishName: "Plastic Chair", count: "" },
-    { id: 30, tamilName: "பிளாஸ்டிக் தண்ணீர் போல்", englishName: "Plastic Water Bowl", count: "" },
+    { id: 30, tamilName: "பிளாஸ்டிக் தண்ணீர் பேரல்", englishName: "Plastic Water Baral", count: "" },
     { id: 31, tamilName: "மூங்கில் கூடை", englishName: "Bamboo Basket", count: "" },
     { id: 32, tamilName: "வடி கூடை", englishName: "Filter Basket", count: "" },
     { id: 33, tamilName: "இரும்பு அடுப்பு", englishName: "Iron Stove", count: "" },

@@ -11,12 +11,12 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
     { id: 5, tamilName: "நெய் (ஆவின்)", englishName: "Ghee (Aavin)", liters: "", ml: "" },
     { id: 6, tamilName: "டால்டா", englishName: "Dalda", liters: "", ml: "" },
     { id: 7, tamilName: "ரூபினி பாமாயில்", englishName: "Rupini Palm Oil", liters: "", ml: "" },
-    { id: 8, tamilName: "வெண்ணை (உழுத்துக் குளி)", englishName: "Butter (Uzhuthu Kuli)", liters: "", ml: "" },
+    { id: 8, tamilName: "வெண்ணை (ஊத்துக் குளி)", englishName: "Butter (Uzhuthu Kuli)", liters: "", ml: "" },
     { id: 9, tamilName: "பன்னீர்", englishName: "Rose Water", liters: "", ml: "" },
     { id: 10, tamilName: "கோவா (சர்க்கரை)", englishName: "Khova (Sweet)", liters: "", ml: "" },
     { id: 11, tamilName: "சர்க்கரை இல்லாத கோவா", englishName: "Sugar-free Khova", liters: "", ml: "" },
     { id: 12, tamilName: "பிரட்", englishName: "Bread", liters: "", ml: "" },
-    { id: 13, tamilName: "தாளான் (பட்டன்)", englishName: "Thalan (Button)", liters: "", ml: "" },
+    { id: 13, tamilName: "காளான் (பட்டன்)", englishName: "Musroom (Button)", liters: "", ml: "" },
   ])
 
   const [flourItems, setFlourItems] = useState([

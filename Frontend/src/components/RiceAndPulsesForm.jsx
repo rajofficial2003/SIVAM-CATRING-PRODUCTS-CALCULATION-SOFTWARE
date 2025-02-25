@@ -29,7 +29,7 @@ const RiceAndPulsesForm = forwardRef(({ initialData }, ref) => {
         { id: "r3", tamilName: "இட்லி குண்டு அரிசி", englishName: "Idli Rice", kg: "", grams: "" },
         { id: "r4", tamilName: "சீரக சம்பா அரிசி", englishName: "Seeraga Samba Rice", kg: "", grams: "" },
         { id: "r5", tamilName: "பாஸ்மதி அரிசி", englishName: "Basmati Rice", kg: "", grams: "" },
-        { id: "r6", tamilName: "ரோயல் புல்லட்டு அரிசி", englishName: "Royal Bullet Rice", kg: "", grams: "" },
+        { id: "r6", tamilName: "ராயல் புல்லட்டு அரிசி", englishName: "Royal Bullet Rice", kg: "", grams: "" },
         { id: "r7", tamilName: "உடைத்த அரிசி நெய்", englishName: "Broken Rice", kg: "", grams: "" },
       ],
     },

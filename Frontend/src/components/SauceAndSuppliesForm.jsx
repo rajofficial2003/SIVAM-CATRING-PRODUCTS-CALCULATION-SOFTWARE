@@ -9,7 +9,7 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
     { id: 3, tamilName: "தக்காளி சாஸ்", englishName: "Tomato Sauce", quantity: "" },
     { id: 4, tamilName: "சபினா பவுடர்", englishName: "Sabena Powder", quantity: "" },
     { id: 5, tamilName: "சோப்பு", englishName: "Soap", quantity: "" },
-    { id: 6, tamilName: "டீ பெட்டி", englishName: "Tea Box", quantity: "" },
+    { id: 6, tamilName: "தீ பெட்டி", englishName: "Match Box", quantity: "" },
     { id: 7, tamilName: "நியூஸ் பேப்பர்", englishName: "Newspaper", quantity: "" },
     { id: 8, tamilName: "நூல் உருண்டை", englishName: "Thread Ball", quantity: "" },
     { id: 9, tamilName: "பேபிள் பேப்பர் ரோல்", englishName: "Paper Roll", quantity: "" },
@@ -28,7 +28,7 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
     { id: 22, tamilName: "காலை-தயிர்", englishName: "Morning-Curd", quantity: "" },
     { id: 23, tamilName: "கேஸ் சிலிண்டர்", englishName: "Gas Cylinder", quantity: "" },
     { id: 24, tamilName: "வெள்ளைத் துண்டு", englishName: "White Cloth", quantity: "" },
-    { id: 25, tamilName: "காப்பாத் துணி", englishName: "Kappa Cloth", quantity: "" },
+    { id: 25, tamilName: "காடாத் துணி", englishName: "Gada Cloth", quantity: "" },
     { id: 26, tamilName: "தென்னந்துடைப்பம்", englishName: "Coconut Broom", quantity: "" },
   ])
 
