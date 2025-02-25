@@ -24,13 +24,13 @@ const RiceAndPulsesForm = forwardRef(({ initialData }, ref) => {
       category: "அரிசி வகைகள்",
       categoryEnglish: "Types of Rice",
       items: [
-        { id: "r1", tamilName: "பொன்னி சாப்பாடு புழுங்கல்", englishName: "Ponni Boiled Rice", kg: "", grams: "" },
-        { id: "r2", tamilName: "பொன்னி பச்சை அரிசி", englishName: "Ponni Raw Rice", kg: "", grams: "" },
-        { id: "r3", tamilName: "இட்லி குண்டு அரிசி", englishName: "Idli Rice", kg: "", grams: "" },
-        { id: "r4", tamilName: "சீரக சம்பா அரிசி", englishName: "Seeraga Samba Rice", kg: "", grams: "" },
-        { id: "r5", tamilName: "பாஸ்மதி அரிசி", englishName: "Basmati Rice", kg: "", grams: "" },
-        { id: "r6", tamilName: "ராயல் புல்லட்டு அரிசி", englishName: "Royal Bullet Rice", kg: "", grams: "" },
-        { id: "r7", tamilName: "உடைத்த அரிசி நெய்", englishName: "Broken Rice", kg: "", grams: "" },
+        { id: "r1", tamilName: "பொன்னி சாப்பாடு புழுங்கல்", englishName: "Ponni Boiled Rice", kg: "" },
+        { id: "r2", tamilName: "பொன்னி பச்சை அரிசி", englishName: "Ponni Raw Rice", kg: "" },
+        { id: "r3", tamilName: "இட்லி குண்டு அரிசி", englishName: "Idli Rice", kg: "" },
+        { id: "r4", tamilName: "சீரக சம்பா அரிசி", englishName: "Seeraga Samba Rice", kg: "" },
+        { id: "r5", tamilName: "பாஸ்மதி அரிசி", englishName: "Basmati Rice", kg: "" },
+        { id: "r6", tamilName: "ராயல் புல்லட்டு அரிசி", englishName: "Royal Bullet Rice", kg: "" },
+        { id: "r7", tamilName: "உடைத்த அரிசி நெய்", englishName: "Broken Rice", kg: "" },
       ],
     },
   ])
@@ -55,7 +55,17 @@ const RiceAndPulsesForm = forwardRef(({ initialData }, ref) => {
         if (category.id === categoryId) {
           return {
             ...category,
-            items: category.items.map((item) => (item.id === itemId ? { ...item, [field]: value } : item)),
+            items: category.items.map((item) => {
+              if (item.id === itemId) {
+                // For rice items, only update the kg field
+                if (category.category === "அரிசி வகைகள்") {
+                  return { ...item, kg: value }
+                }
+                // For pulse items, update both kg and grams fields
+                return { ...item, [field]: value }
+              }
+              return item
+            }),
           }
         }
         return category
@@ -92,10 +102,12 @@ const RiceAndPulsesForm = forwardRef(({ initialData }, ref) => {
                       <span className="tamil-text">கிலோ</span>
                       <span className="english-text"> / Kg</span>
                     </th>
-                    <th className="measurement-header">
-                      <span className="tamil-text">கிராம்</span>
-                      <span className="english-text"> / Grams</span>
-                    </th>
+                    {category.category !== "அரிசி வகைகள்" && (
+                      <th className="measurement-header">
+                        <span className="tamil-text">கிராம்</span>
+                        <span className="english-text"> / Grams</span>
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -117,16 +129,18 @@ const RiceAndPulsesForm = forwardRef(({ initialData }, ref) => {
                           placeholder="Kg"
                         />
                       </td>
-                      <td>
-                        <input
-                          type="number"
-                          className="form-control form-control-sm"
-                          min="0"
-                          value={item.grams}
-                          onChange={(e) => handleInputChange(category.id, item.id, "grams", e.target.value)}
-                          placeholder="Grams"
-                        />
-                      </td>
+                      {category.category !== "அரிசி வகைகள்" && (
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.grams}
+                            onChange={(e) => handleInputChange(category.id, item.id, "grams", e.target.value)}
+                            placeholder="Grams"
+                          />
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

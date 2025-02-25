@@ -11,11 +11,11 @@ const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
   ])
 
   const [colorPowderItems, setColorPowderItems] = useState([
-    { id: 1, tamilName: "கேசரி பவுடர்", englishName: "Kesari Powder", grams: "" },
-    { id: 2, tamilName: "ஆரஞ்சி பவுடர்", englishName: "Orange Powder", grams: "" },
-    { id: 3, tamilName: "லெமன் பவுடர்", englishName: "Lemon Powder", grams: "" },
-    { id: 4, tamilName: "பச்சை பவுடர்", englishName: "Green Powder", grams: "" },
-    { id: 5, tamilName: "சாக்லேட் பவுடர்", englishName: "Chocolate Powder", grams: "" },
+    { id: 1, tamilName: "கேசரி பவுடர்", englishName: "Kesari Powder", pockets: "" },
+    { id: 2, tamilName: "ஆரஞ்சி பவுடர்", englishName: "Orange Powder", pockets: "" },
+    { id: 3, tamilName: "லெமன் பவுடர்", englishName: "Lemon Powder", pockets: "" },
+    { id: 4, tamilName: "பச்சை பவுடர்", englishName: "Green Powder", pockets: "" },
+    { id: 5, tamilName: "சாக்லேட் பவுடர்", englishName: "Chocolate Powder", pockets: "" },
   ])
 
   useEffect(() => {
@@ -42,14 +42,14 @@ const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
   }
 
   const handleColorPowderInputChange = (id, value) => {
-    setColorPowderItems(colorPowderItems.map((item) => (item.id === id ? { ...item, grams: value } : item)))
+    setColorPowderItems(colorPowderItems.map((item) => (item.id === id ? { ...item, pockets: value } : item)))
   }
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
       return {
         essences: essenceItems.filter((item) => item.ml),
-        colorPowders: colorPowderItems.filter((item) => item.grams),
+        colorPowders: colorPowderItems.filter((item) => item.pockets),
       }
     },
   }))
@@ -124,8 +124,8 @@ const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
                     <span className="english-text"> / Items</span>
                   </th>
                   <th className="measurement-header">
-                    <span className="tamil-text">கிராம்</span>
-                    <span className="english-text"> / Grams</span>
+                    <span className="tamil-text">பாக்கெட்டுகள்</span>
+                    <span className="english-text"> / Pockets</span>
                   </th>
                 </tr>
               </thead>
@@ -143,9 +143,9 @@ const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
                         type="number"
                         className="form-control form-control-sm"
                         min="0"
-                        value={item.grams}
+                        value={item.pockets}
                         onChange={(e) => handleColorPowderInputChange(item.id, e.target.value)}
-                        placeholder="Grams"
+                        placeholder="Pockets"
                       />
                     </td>
                   </tr>

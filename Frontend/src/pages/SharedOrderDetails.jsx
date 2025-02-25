@@ -1,25 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, Link, useNavigate } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
-import { FaEdit, FaArrowLeft, FaDownload, FaShare, FaWhatsapp } from "react-icons/fa"
+import { FaDownload } from "react-icons/fa"
 import jsPDF from "jspdf"
 import "jspdf-autotable"
-import { Modal, Button, Dropdown } from "react-bootstrap"
 
 // Import the Noto Sans Tamil font
 import notoSansTamilUrl from "../fonts/NotoSansTamil-Regular.ttf"
 
-const OrderDetails = () => {
+const SharedOrderDetails = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
-  const [showShareModal, setShowShareModal] = useState(false)
-  const [shareLink, setShareLink] = useState("")
-  const navigate = useNavigate()
 
   useEffect(() => {
     fetchOrderDetails()
@@ -161,33 +157,6 @@ const OrderDetails = () => {
     }
   }
 
-  const handleShare = () => {
-    const shareLink = `${window.location.origin}/shared-order/${orderId}`
-    setShareLink(shareLink)
-    setShowShareModal(true)
-  }
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareLink)
-    alert("Link copied to clipboard!")
-  }
-
-  const handleDirectShare = (platform) => {
-    const shareLink = `${window.location.origin}/shared-order/${orderId}`
-    let shareUrl = ""
-
-    switch (platform) {
-      case "whatsapp":
-        shareUrl = `https://wa.me/?text=${encodeURIComponent(shareLink)}`
-        break
-      // Add more cases for other platforms as needed
-      default:
-        shareUrl = shareLink
-    }
-
-    window.open(shareUrl, "_blank")
-  }
-
   if (loading) {
     return (
       <div className="container mt-5 text-center">
@@ -204,13 +173,6 @@ const OrderDetails = () => {
         <div className="alert" style={{ backgroundColor: "#d33131", color: "white" }} role="alert">
           Order not found.
         </div>
-        <button
-          onClick={() => navigate("/orders")}
-          className="btn"
-          style={{ backgroundColor: "#d33131", color: "white" }}
-        >
-          <FaArrowLeft className="me-2" /> Back to Orders
-        </button>
       </div>
     )
   }
@@ -218,20 +180,8 @@ const OrderDetails = () => {
   return (
     <div className="container py-5">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <div className="d-flex align-items-center mb-3 mb-md-0">
-          <button
-            onClick={() => navigate("/orders")}
-            className="btn me-3"
-            style={{ backgroundColor: "#d33131", color: "white" }}
-          >
-            <FaArrowLeft />
-          </button>
-          <h1 style={{ color: "black", margin: 0 }}>Order Details</h1>
-        </div>
+        <h1 style={{ color: "black", margin: 0 }}>Shared Order Details</h1>
         <div className="d-flex gap-2">
-          <Link to={`/orders/${orderId}/edit`} className="btn" style={{ backgroundColor: "#d33131", color: "white" }}>
-            <FaEdit className="me-2" /> Edit Order
-          </Link>
           <button
             onClick={generatePDF}
             className="btn"
@@ -249,20 +199,6 @@ const OrderDetails = () => {
               </>
             )}
           </button>
-          <Dropdown>
-            <Dropdown.Toggle variant="danger" id="dropdown-share">
-              <FaShare className="me-2" /> Share
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={handleShare}>
-                <FaShare className="me-2" /> Copy Link
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleDirectShare("whatsapp")}>
-                <FaWhatsapp className="me-2" /> Share on WhatsApp
-              </Dropdown.Item>
-              {/* Add more direct share options here */}
-            </Dropdown.Menu>
-          </Dropdown>
         </div>
       </div>
 
@@ -341,30 +277,9 @@ const OrderDetails = () => {
 
       {/* Idli Batter */}
       {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
-
-      {/* Share Modal */}
-      <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
-        <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
-          <Modal.Title>Share Order</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Share this link to view the order details:</p>
-          <div className="input-group mb-3">
-            <input type="text" className="form-control" value={shareLink} readOnly />
-            <button className="btn btn-outline-secondary" type="button" onClick={handleCopyLink}>
-              Copy
-            </button>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowShareModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   )
 }
 
-export default OrderDetails
+export default SharedOrderDetails
 

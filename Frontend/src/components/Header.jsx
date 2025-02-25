@@ -41,17 +41,17 @@ const Header = () => {
       <div className="container">
         <div className="row align-items-center">
           <div className="col-md-2 text-center text-md-start">
-            <img src="./Frame 2.png" alt="Business Logo" style={logoStyle} />
+            <img src="./assets/anamalayar.png" alt="Business Logo" style={logoStyle} />
           </div>
           <div className="col-md-8 text-center mb-3 mb-md-0">
-            <h1 style={businessNameStyle}>சிவம் கேட்டரிங்</h1>
+            <h1 style={businessNameStyle}> சாணாநந்தல் சிவம் </h1>
             <h2 style={businessSubtitleStyle}>M.அருள்சங்கர், P.பாலாஜி</h2>
-            <p style={businessAddressStyle}>புதுசாணாநந்தல் கிராமம், தி.மலை வட்டம் & மாவட்டம் - 606 805</p>
+            <p style={businessAddressStyle}> தி.மலை வட்டம் & மாவட்டம் - 606 805</p>
           </div>
           <div className="col-md-2 text-center text-md-end">
             <div style={contactInfoStyle}>
-              <p className="mb-1">Cell: 9047176011</p>
-              <p className="mb-0">9786232524</p>
+              <h5 className="mb-1">Cell: 9047176011</h5>
+              <h5 className="mb-0">9786232524</h5>
             </div>
           </div>
         </div>

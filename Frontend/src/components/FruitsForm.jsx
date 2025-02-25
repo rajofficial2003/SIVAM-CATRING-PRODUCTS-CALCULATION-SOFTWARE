@@ -4,17 +4,17 @@ import { useState, forwardRef, useImperativeHandle, useEffect } from "react"
 
 const FruitsForm = forwardRef(({ initialData }, ref) => {
   const [items, setItems] = useState([
-    { id: 1, tamilName: "மாம்பழம்", englishName: "Mango", kg: "", grams: "" },
-    { id: 2, tamilName: "பலாப்பழம்", englishName: "Jackfruit", kg: "", grams: "" },
-    { id: 3, tamilName: "வாழைப்பழம் (மஞ்சள்)", englishName: "Banana (Yellow)", kg: "", grams: "" },
-    { id: 4, tamilName: "பச்சை வாழைப்பழம்", englishName: "Green Banana", kg: "", grams: "" },
-    { id: 5, tamilName: "கற்பூர வாழைப்பழம்", englishName: "Karpooravalli Banana", kg: "", grams: "" },
-    { id: 6, tamilName: "அன்னாச்சி பழம்", englishName: "Pineapple", kg: "", grams: "" },
-    { id: 7, tamilName: "ஆப்பிள் பழம்", englishName: "Apple", kg: "", grams: "" },
-    { id: 8, tamilName: "தர்பூசணி பழம்", englishName: "Watermelon", kg: "", grams: "" },
-    { id: 9, tamilName: "பப்பாளி பழம்", englishName: "Papaya", kg: "", grams: "" },
-    { id: 10, tamilName: "மாதுளம் பழம்", englishName: "Pomegranate", kg: "", grams: "" },
-    { id: 11, tamilName: "சீட்லெஸ் திராட்சை", englishName: "Seedless Grapes", kg: "", grams: "" },
+    { id: 1, tamilName: "மாம்பழம்", englishName: "Mango", kg: "" },
+    { id: 2, tamilName: "பலாப்பழம்", englishName: "Jackfruit", kg: "" },
+    { id: 3, tamilName: "வாழைப்பழம் (மஞ்சள்)", englishName: "Banana (Yellow)", kg: "" },
+    { id: 4, tamilName: "பச்சை வாழைப்பழம்", englishName: "Green Banana", kg: "" },
+    { id: 5, tamilName: "கற்பூர வாழைப்பழம்", englishName: "Karpooravalli Banana", kg: "" },
+    { id: 6, tamilName: "அன்னாச்சி பழம்", englishName: "Pineapple", kg: "" },
+    { id: 7, tamilName: "ஆப்பிள் பழம்", englishName: "Apple", kg: "" },
+    { id: 8, tamilName: "தர்பூசணி பழம்", englishName: "Watermelon", kg: "" },
+    { id: 9, tamilName: "பப்பாளி பழம்", englishName: "Papaya", kg: "" },
+    { id: 10, tamilName: "மாதுளம் பழம்", englishName: "Pomegranate", kg: "" },
+    { id: 11, tamilName: "சீட்லெஸ் திராட்சை", englishName: "Seedless Grapes", kg: "" },
   ])
 
   useEffect(() => {
@@ -28,13 +28,13 @@ const FruitsForm = forwardRef(({ initialData }, ref) => {
     }
   }, [initialData])
 
-  const handleInputChange = (id, field, value) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  const handleInputChange = (id, value) => {
+    setItems(items.map((item) => (item.id === id ? { ...item, kg: value } : item)))
   }
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.kg || item.grams)
+      return items.filter((item) => item.kg)
     },
   }))
 
@@ -60,10 +60,6 @@ const FruitsForm = forwardRef(({ initialData }, ref) => {
                     <span className="tamil-text">கிலோ</span>
                     <span className="english-text"> / Kg</span>
                   </th>
-                  <th className="measurement-header">
-                    <span className="tamil-text">கிராம்</span>
-                    <span className="english-text"> / Grams</span>
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -81,18 +77,8 @@ const FruitsForm = forwardRef(({ initialData }, ref) => {
                         className="form-control form-control-sm"
                         min="0"
                         value={item.kg}
-                        onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
+                        onChange={(e) => handleInputChange(item.id, e.target.value)}
                         placeholder="Kg"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        min="0"
-                        value={item.grams}
-                        onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
-                        placeholder="Grams"
                       />
                     </td>
                   </tr>

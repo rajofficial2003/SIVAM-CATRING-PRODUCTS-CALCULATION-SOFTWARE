@@ -5,9 +5,10 @@ import { collection, getDocs, doc, deleteDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
 import { format } from "date-fns"
 import { useNavigate } from "react-router-dom"
-import { FaEye, FaEdit, FaTrash, FaSearch, FaCalendar, FaUtensils } from "react-icons/fa"
+import { FaEye, FaEdit, FaTrash, FaSearch, FaCalendar, FaUtensils, FaShare, FaWhatsapp } from "react-icons/fa"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
+import { Modal, Button, Dropdown } from "react-bootstrap"
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([])
@@ -16,6 +17,10 @@ const OrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterDate, setFilterDate] = useState(null)
   const [filterMonth, setFilterMonth] = useState("")
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [orderToDelete, setOrderToDelete] = useState(null)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [shareLink, setShareLink] = useState("")
   const navigate = useNavigate()
 
   const fetchOrders = useCallback(async () => {
@@ -55,16 +60,28 @@ const OrdersPage = () => {
     fetchOrders()
   }, [fetchOrders])
 
-  const handleDelete = async (orderId) => {
-    if (window.confirm("Are you sure you want to delete this order?")) {
+  const handleDeleteClick = (orderId) => {
+    setOrderToDelete(orderId)
+    setShowDeleteModal(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (orderToDelete) {
       try {
-        await deleteDoc(doc(db, "Orders", orderId))
-        setOrders((prevOrders) => prevOrders.filter((order) => order && order.id !== orderId))
+        await deleteDoc(doc(db, "Orders", orderToDelete))
+        setOrders((prevOrders) => prevOrders.filter((order) => order && order.id !== orderToDelete))
+        setShowDeleteModal(false)
+        setOrderToDelete(null)
       } catch (err) {
         console.error("Error deleting order:", err)
         setError("Failed to delete order. Please try again.")
       }
     }
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false)
+    setOrderToDelete(null)
   }
 
   const handleViewDetails = (orderId) => {
@@ -73,6 +90,33 @@ const OrdersPage = () => {
 
   const handleEdit = (orderId) => {
     navigate(`/orders/${orderId}/edit`)
+  }
+
+  const handleShare = (orderId) => {
+    const shareLink = `${window.location.origin}/shared-order/${orderId}`
+    setShareLink(shareLink)
+    setShowShareModal(true)
+  }
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareLink)
+    alert("Link copied to clipboard!")
+  }
+
+  const handleDirectShare = (orderId, platform) => {
+    const shareLink = `${window.location.origin}/shared-order/${orderId}`
+    let shareUrl = ""
+
+    switch (platform) {
+      case "whatsapp":
+        shareUrl = `https://wa.me/?text=${encodeURIComponent(shareLink)}`
+        break
+      // Add more cases for other platforms as needed
+      default:
+        shareUrl = shareLink
+    }
+
+    window.open(shareUrl, "_blank")
   }
 
   const filteredOrders = orders.filter((order) => {
@@ -208,10 +252,28 @@ const OrdersPage = () => {
                       <button
                         className="btn btn-sm"
                         style={{ backgroundColor: "#d33131", color: "white" }}
-                        onClick={() => handleDelete(order.id)}
+                        onClick={() => handleDeleteClick(order.id)}
                       >
                         <FaTrash className="me-1" /> Delete
                       </button>
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          variant="danger"
+                          id={`dropdown-share-${order.id}`}
+                          size="sm"
+                          style={{ backgroundColor: "#d33131", borderColor: "#d33131" }}
+                        >
+                          <FaShare className="me-1" /> Share
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                          <Dropdown.Item onClick={() => handleShare(order.id)}>
+                            <FaShare className="me-2" /> Copy Link
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={() => handleDirectShare(order.id, "whatsapp")}>
+                            <FaWhatsapp className="me-2" /> Share on WhatsApp
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
                   </div>
                 </div>
@@ -220,6 +282,39 @@ const OrdersPage = () => {
           ))}
         </div>
       )}
+      <Modal show={showDeleteModal} onHide={handleDeleteCancel} centered>
+        <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this order?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleDeleteCancel}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
+        <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Title>Share Order</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Share this link to view the order details:</p>
+          <div className="input-group mb-3">
+            <input type="text" className="form-control" value={shareLink} readOnly />
+            <button className="btn btn-outline-secondary" type="button" onClick={handleCopyLink}>
+              Copy
+            </button>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowShareModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <style jsx>{`
         .loading-animation {
           display: flex;
