@@ -40,18 +40,20 @@ const Header = () => {
     <header style={headerStyle}>
       <div className="container">
         <div className="row align-items-center">
-          <div className="col-md-2 text-center text-md-start">
+          <div className="col-md-2 text-center text-md-none d-none d-md-block">
             <img src="./assets/anamalayar.png" alt="Business Logo" style={logoStyle} />
           </div>
           <div className="col-md-8 text-center mb-3 mb-md-0">
-            <h1 style={businessNameStyle}> சாணாநந்தல் சிவம் </h1>
-            <h2 style={businessSubtitleStyle}>M.அருள்சங்கர், P.பாலாஜி</h2>
-            <p style={businessAddressStyle}> தி.மலை வட்டம் & மாவட்டம் - 606 805</p>
+            <h1 style={businessNameStyle} className="py-1"> சாணாநந்தல் சிவம் </h1>
+            <h2 style={businessNameStyle} className="py-1"> சமையல் காண்ட்ராக்ட் </h2>
+            <h3 style={businessSubtitleStyle}>M.அருள்சங்கர், P.பாலாஜி</h3>
+            <p style={businessAddressStyle}> தி.மலை  மாவட்டம் - 606 805</p>
           </div>
-          <div className="col-md-2 text-center text-md-end">
+          <div className="col-md-2 text-center text-md-start">
             <div style={contactInfoStyle}>
-              <h5 className="mb-1">Cell: 9047176011</h5>
-              <h5 className="mb-0">9786232524</h5>
+              <h3 className="text-center text-md-start">Cell:</h3>
+              <h3 className="mb-1">9047176011</h3>
+              <h3 className="mb-0">9786232524</h3>
             </div>
           </div>
         </div>
