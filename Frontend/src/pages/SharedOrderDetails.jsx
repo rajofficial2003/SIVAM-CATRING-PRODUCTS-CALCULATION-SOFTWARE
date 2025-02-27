@@ -91,6 +91,10 @@ const SharedOrderDetails = () => {
                         } else {
                           value = `${item.kg} (Kg)`
                         }
+                      } else if (title === "Color Powder Types") {
+                        value = `${item.pockets} (Pockets)`
+                      } else if (title === "Flour Types") {
+                        value = `${item.kg} (Kg)`
                       }
                       return <td key={colIndex}>{value}</td>
                     })}
@@ -163,6 +167,10 @@ const SharedOrderDetails = () => {
                 } else {
                   value = `${item.kg} (Kg)`
                 }
+              } else if (title === "Color Powder Types") {
+                value = `${item.pockets} (Pockets)`
+              } else if (title === "Flour Types") {
+                value = `${item.kg} (Kg)`
               }
               return value
             }),
@@ -187,9 +195,9 @@ const SharedOrderDetails = () => {
       addItemsTable(order.generalItems, "General Items", ["Kg", "Grams"])
       addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
       addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
-      addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Grams"])
+      addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])
       addItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Liters", "ML"])
-      addItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg", "Grams"])
+      addItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])
       addItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])
       addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters"])
       addItemsTable(order.fruits, "Fruits", ["Kg", "Grams"])
@@ -303,11 +311,11 @@ const SharedOrderDetails = () => {
 
       {/* Essence and Color */}
       {renderItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])}
-      {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Grams"])}
+      {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])}
 
       {/* Oils and Flours */}
       {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Liters", "ML"])}
-      {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg", "Grams"])}
+      {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])}
 
       {/* Masala Items */}
       {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}

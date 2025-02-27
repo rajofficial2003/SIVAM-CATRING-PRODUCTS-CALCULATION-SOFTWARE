@@ -44,7 +44,7 @@ const Footer = () => {
         <div className="row justify-content-center">
           <div className="col-12 text-center mb-4">
             <div className="tamil-content">
-              <h2 style={specialTextStyle}>மிகஸி எடுத்து வரவும்</h2>
+              <h2 style={specialTextStyle}>மிக்ஸி எடுத்து வரவும்</h2>
               <p style={specialDescriptionStyle}>
                 எங்களிடம் திருமணம் மஞ்சள் நீராட்டு விழா மற்றும் சுப விசேஷங்களுக்கு சிறந்த முறையில் சமையல் செய்ய ஆட்கள் கிடைக்கும்.
               </p>

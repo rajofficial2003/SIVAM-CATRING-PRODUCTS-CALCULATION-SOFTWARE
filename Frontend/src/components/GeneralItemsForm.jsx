@@ -55,7 +55,7 @@ const GeneralItemsForm = forwardRef(({ initialData }, ref) => {
     { id: 49, tamilName: "சாரை பருப்பு", englishName: "Sarai Dal", kg: "", grams: "" },
     { id: 50, tamilName: "அப்பளம் (பாப்புலர்)", englishName: "Appalam (Popular)", kg: "", grams: "" },
     { id: 51, tamilName: "சிப்ஸ் அப்பளம்", englishName: "chips Appalam", kg: "", grams: "" },
-    { id: 52, tamilName: "கான் சிம்ப்ஸ்", englishName: "Corn Chips", kg: "", grams: "" },
+    { id: 52, tamilName: "கான் சிப்ஸ்", englishName: "Corn Chips", kg: "", grams: "" },
     { id: 53, tamilName: "காலிபிளவர் சிப்ஸ்", englishName: "Cauliflower Chips", kg: "", grams: "" },
     { id: 54, tamilName: "கலர் தேங்காய் பூ", englishName: "Colored Coconut Flower", kg: "", grams: "" },
     { id: 55, tamilName: "அவல்", englishName: "Flattened Rice", kg: "", grams: "" },

@@ -30,7 +30,7 @@ const RiceAndPulsesForm = forwardRef(({ initialData }, ref) => {
         { id: "r4", tamilName: "சீரக சம்பா அரிசி", englishName: "Seeraga Samba Rice", kg: "" },
         { id: "r5", tamilName: "பாஸ்மதி அரிசி", englishName: "Basmati Rice", kg: "" },
         { id: "r6", tamilName: "ராயல் புல்லட்டு அரிசி", englishName: "Royal Bullet Rice", kg: "" },
-        { id: "r7", tamilName: "உடைத்த அரிசி நெய்", englishName: "Broken Rice", kg: "" },
+        { id: "r7", tamilName: "உடைத்த அரிசி நொய்", englishName: "Broken Rice", kg: "" },
       ],
     },
   ])

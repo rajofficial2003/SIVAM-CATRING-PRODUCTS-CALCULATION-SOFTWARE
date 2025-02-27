@@ -20,16 +20,16 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
   ])
 
   const [flourItems, setFlourItems] = useState([
-    { id: 1, tamilName: "ரவை", englishName: "Rava", kg: "", grams: "" },
-    { id: 2, tamilName: "சம்பா கோதுமை ரவை", englishName: "Samba Wheat Rava", kg: "", grams: "" },
-    { id: 3, tamilName: "அரிசி சேவை", englishName: "Rice Sevai", kg: "", grams: "" },
-    { id: 4, tamilName: "சேமியா", englishName: "Semiya", kg: "", grams: "" },
-    { id: 5, tamilName: "கோதுமை மாவு (ஆசீர்வாத)", englishName: "Wheat Flour (Aashirvaad)", kg: "", grams: "" },
-    { id: 6, tamilName: "மைதா மாவு (நரசு & நாகா)", englishName: "Maida Flour (Narasu & Naga)", kg: "", grams: "" },
-    { id: 7, tamilName: "கடலை மாவு", englishName: "Gram Flour", kg: "", grams: "" },
-    { id: 8, tamilName: "பச்சரிசி மாவு", englishName: "Raw Rice Flour", kg: "", grams: "" },
-    { id: 9, tamilName: "கார்ன் பிளவர் மாவு", englishName: "Corn Flour", kg: "", grams: "" },
-    { id: 10, tamilName: "கிழங்கு மாவு", englishName: "Potato Flour", kg: "", grams: "" },
+    { id: 1, tamilName: "ரவை", englishName: "Rava", kg: "" },
+    { id: 2, tamilName: "சம்பா கோதுமை ரவை", englishName: "Samba Wheat Rava", kg: "" },
+    { id: 3, tamilName: "அரிசி சேவை", englishName: "Rice Sevai", kg: "" },
+    { id: 4, tamilName: "சேமியா", englishName: "Semiya", kg: "" },
+    { id: 5, tamilName: "கோதுமை மாவு (ஆசீர்வாத)", englishName: "Wheat Flour (Aashirvaad)", kg: "" },
+    { id: 6, tamilName: "மைதா மாவு (நரசு & நாகா)", englishName: "Maida Flour (Narasu & Naga)", kg: "" },
+    { id: 7, tamilName: "கடலை மாவு", englishName: "Gram Flour", kg: "" },
+    { id: 8, tamilName: "பச்சரிசி மாவு", englishName: "Raw Rice Flour", kg: "" },
+    { id: 9, tamilName: "கார்ன் பிளவர் மாவு", englishName: "Corn Flour", kg: "" },
+    { id: 10, tamilName: "கிழங்கு மாவு", englishName: "Potato Flour", kg: "" },
   ])
 
   useEffect(() => {
@@ -55,15 +55,15 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
     setOilItems(oilItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
   }
 
-  const handleFlourInputChange = (id, field, value) => {
-    setFlourItems(flourItems.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
+  const handleFlourInputChange = (id, value) => {
+    setFlourItems(flourItems.map((item) => (item.id === id ? { ...item, kg: value } : item)))
   }
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
       return {
         oils: oilItems.filter((item) => item.liters || item.ml),
-        flours: flourItems.filter((item) => item.kg || item.grams),
+        flours: flourItems.filter((item) => item.kg),
       }
     },
   }))
@@ -155,10 +155,6 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
                     <span className="tamil-text">கிலோ</span>
                     <span className="english-text"> / Kg</span>
                   </th>
-                  <th className="measurement-header">
-                    <span className="tamil-text">கிராம்</span>
-                    <span className="english-text"> / Grams</span>
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -176,18 +172,8 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
                         className="form-control form-control-sm"
                         min="0"
                         value={item.kg}
-                        onChange={(e) => handleFlourInputChange(item.id, "kg", e.target.value)}
+                        onChange={(e) => handleFlourInputChange(item.id, e.target.value)}
                         placeholder="Kg"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        min="0"
-                        value={item.grams}
-                        onChange={(e) => handleFlourInputChange(item.id, "grams", e.target.value)}
-                        placeholder="Grams"
                       />
                     </td>
                   </tr>
