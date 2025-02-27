@@ -69,7 +69,30 @@ const SharedOrderDetails = () => {
                     </td>
                     {columns.map((col, colIndex) => {
                       const key = col.toLowerCase().replace(/ /g, "")
-                      return <td key={colIndex}>{item[key] || "-"}</td>
+                      let value = item[key] || "-"
+                      if (title === "Sauce and Supplies") {
+                        if (item.liters !== undefined) {
+                          value = `${item.liters} (Liters)`
+                        } else if (item.quantity !== undefined) {
+                          value = item.quantity
+                        }
+                      } else if (title === "Vegetables") {
+                        if (item.id === 40 || item.id === 44 || item.id === 45) {
+                          value = `${item.count} (Count)`
+                        } else if (
+                          item.id === 37 ||
+                          item.id === 38 ||
+                          item.id === 39 ||
+                          item.id === 41 ||
+                          item.id === 42 ||
+                          item.id === 43
+                        ) {
+                          value = `${item.bundle} (கட்டு)`
+                        } else {
+                          value = `${item.kg} (Kg)`
+                        }
+                      }
+                      return <td key={colIndex}>{value}</td>
                     })}
                   </tr>
                 ))}
@@ -116,7 +139,33 @@ const SharedOrderDetails = () => {
 
           const tableData = items.map((item) => [
             `${item.tamilName} / ${item.englishName}`,
-            ...columns.map((col) => item[col.toLowerCase().replace(/ /g, "")] || "-"),
+            ...columns.map((col) => {
+              const key = col.toLowerCase().replace(/ /g, "")
+              let value = item[key] || "-"
+              if (title === "Sauce and Supplies") {
+                if (item.liters !== undefined) {
+                  value = `${item.liters} (Liters)`
+                } else if (item.quantity !== undefined) {
+                  value = item.quantity
+                }
+              } else if (title === "Vegetables") {
+                if (item.id === 40 || item.id === 44 || item.id === 45) {
+                  value = `${item.count} (Count)`
+                } else if (
+                  item.id === 37 ||
+                  item.id === 38 ||
+                  item.id === 39 ||
+                  item.id === 41 ||
+                  item.id === 42 ||
+                  item.id === 43
+                ) {
+                  value = `${item.bundle} (கட்டு)`
+                } else {
+                  value = `${item.kg} (Kg)`
+                }
+              }
+              return value
+            }),
           ])
 
           doc.autoTable({
@@ -134,7 +183,7 @@ const SharedOrderDetails = () => {
         }
       }
 
-      addItemsTable(order.poojaItems, "Pooja Items", ["Kg", "Grams"])
+      addItemsTable(order.poojaItems, "Pooja Items", ["Rs"])
       addItemsTable(order.generalItems, "General Items", ["Kg", "Grams"])
       addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
       addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
@@ -142,9 +191,9 @@ const SharedOrderDetails = () => {
       addItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Liters", "ML"])
       addItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg", "Grams"])
       addItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])
-      addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity"])
+      addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters"])
       addItemsTable(order.fruits, "Fruits", ["Kg", "Grams"])
-      addItemsTable(order.vegetables, "Vegetables", ["Kg"])
+      addItemsTable(order.vegetables, "Vegetables", ["Measurement"])
       addItemsTable(order.utensils, "Utensils", ["Count"])
       addItemsTable(order.idliBatter, "Idli Batter", ["Count"])
 
@@ -244,7 +293,7 @@ const SharedOrderDetails = () => {
       </div>
 
       {/* Pooja Items */}
-      {renderItemsTable(order.poojaItems, "Pooja Items", ["Kg", "Grams"])}
+      {renderItemsTable(order.poojaItems, "Pooja Items", ["Rs"])}
 
       {/* General Items */}
       {renderItemsTable(order.generalItems, "General Items", ["Kg", "Grams"])}
@@ -264,13 +313,13 @@ const SharedOrderDetails = () => {
       {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}
 
       {/* Sauce and Supplies */}
-      {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity"])}
+      {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters"])}
 
       {/* Fruits */}
       {renderItemsTable(order.fruits, "Fruits", ["Kg", "Grams"])}
 
       {/* Vegetables */}
-      {renderItemsTable(order.vegetables, "Vegetables", ["Kg"])}
+      {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}
 
       {/* Utensils */}
       {renderItemsTable(order.utensils, "Utensils", ["Count"])}

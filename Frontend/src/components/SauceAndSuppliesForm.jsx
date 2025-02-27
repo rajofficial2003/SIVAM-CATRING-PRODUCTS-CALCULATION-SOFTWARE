@@ -22,10 +22,10 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
     { id: 16, tamilName: "தண்ணீர் கேன் 500 ML", englishName: "Water Can 500ml", quantity: "" },
     { id: 17, tamilName: "தண்ணீர் கேன் 20 லிட்டர்", englishName: "Water Can 20L", quantity: "" },
     { id: 18, tamilName: "ஐஸ் க்ரீம் (அருண்)", englishName: "Ice Cream (Arun)", quantity: "" },
-    { id: 19, tamilName: "மாலை-பால்", englishName: "Evening-Milk", quantity: "" },
-    { id: 20, tamilName: "காலை-பால்", englishName: "Morning-Milk", quantity: "" },
-    { id: 21, tamilName: "மாலை-தயிர்", englishName: "Evening-Curd", quantity: "" },
-    { id: 22, tamilName: "காலை-தயிர்", englishName: "Morning-Curd", quantity: "" },
+    { id: 19, tamilName: "மாலை-பால்", englishName: "Evening-Milk", liters: "" },
+    { id: 20, tamilName: "காலை-பால்", englishName: "Morning-Milk", liters: "" },
+    { id: 21, tamilName: "மாலை-தயிர்", englishName: "Evening-Curd", liters: "" },
+    { id: 22, tamilName: "காலை-தயிர்", englishName: "Morning-Curd", liters: "" },
     { id: 23, tamilName: "கேஸ் சிலிண்டர்", englishName: "Gas Cylinder", quantity: "" },
     { id: 24, tamilName: "வெள்ளைத் துண்டு", englishName: "White Cloth", quantity: "" },
     { id: 25, tamilName: "காடாத் துணி", englishName: "Gada Cloth", quantity: "" },
@@ -43,13 +43,13 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
     }
   }, [initialData])
 
-  const handleInputChange = (id, value) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, quantity: value } : item)))
+  const handleInputChange = (id, value, field) => {
+    setItems(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
   }
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.quantity)
+      return items.filter((item) => item.quantity || item.liters)
     },
   }))
 
@@ -73,7 +73,7 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
                   </th>
                   <th className="measurement-header">
                     <span className="tamil-text">அளவு</span>
-                    <span className="english-text"> / Quantity</span>
+                    <span className="english-text"> / Quantity/Liters</span>
                   </th>
                 </tr>
               </thead>
@@ -91,9 +91,11 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
                         type="number"
                         className="form-control form-control-sm"
                         min="0"
-                        value={item.quantity}
-                        onChange={(e) => handleInputChange(item.id, e.target.value)}
-                        placeholder="Quantity"
+                        value={item.quantity || item.liters || ""}
+                        onChange={(e) =>
+                          handleInputChange(item.id, e.target.value, item.liters !== undefined ? "liters" : "quantity")
+                        }
+                        placeholder={item.liters !== undefined ? "Liters" : "Quantity"}
                       />
                     </td>
                   </tr>

@@ -4,7 +4,7 @@ import { useState, forwardRef, useImperativeHandle, useEffect } from "react"
 
 const VegetablesForm = forwardRef(({ initialData }, ref) => {
   const [items, setItems] = useState([
-    { id: 1, tamilName: "முள்ளங்க கத்தரிக்காய்", englishName: "Thorny Brinjal", kg: "" },
+    { id: 1, tamilName: "முள்ளுக் கத்தரிக்காய்", englishName: "Spiny Brinjal", kg: "" },
     { id: 2, tamilName: "முருங்கைக்காய்", englishName: "Drumstick", kg: "" },
     { id: 3, tamilName: "மாங்காய்", englishName: "Raw Mango", kg: "" },
     { id: 4, tamilName: "வெண்டைக்காய்", englishName: "Ladies Finger", kg: "" },
@@ -25,7 +25,7 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
     { id: 19, tamilName: "கோஸ்", englishName: "Cabbage", kg: "" },
     { id: 20, tamilName: "பீன்ஸ்", englishName: "Beans", kg: "" },
     { id: 21, tamilName: "கேரட்", englishName: "Carrot", kg: "" },
-    { id: 22, tamilName: "சௌ சௌ", englishName: "chow chow", kg: "" },
+    { id: 22, tamilName: "சௌ சௌ", englishName: "chow chow", kg: "" },
     { id: 23, tamilName: "நூக்கல்", englishName: "Nukal", kg: "" },
     { id: 24, tamilName: "பீட்ரூட்", englishName: "Beetroot", kg: "" },
     { id: 25, tamilName: "முள்ளங்கி", englishName: "Radish", kg: "" },
@@ -40,15 +40,15 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
     { id: 34, tamilName: "வாழைப்பூ", englishName: "Banana Flower", kg: "" },
     { id: 35, tamilName: "வாழைத் தண்டு", englishName: "Banana Stem", kg: "" },
     { id: 36, tamilName: "காலிபிளவர் பூ", englishName: "Cauliflower", kg: "" },
-    { id: 37, tamilName: "சிறு கீரை", englishName: "Small Greens", kg: "" },
-    { id: 38, tamilName: "அரை கீரை", englishName: "Amaranth Greens", kg: "" },
-    { id: 39, tamilName: "முடக்கத்தான் கீரை", englishName: "Balloon Vine Greens", kg: "" },
-    { id: 40, tamilName: "எலுமிச்சை பழம்", englishName: "Lemon", kg: "" },
-    { id: 41, tamilName: "கருவேப்பிலை", englishName: "Curry Leaves", kg: "" },
-    { id: 42, tamilName: "கொத்தமல்லி", englishName: "Coriander", kg: "" },
-    { id: 43, tamilName: "புதினா", englishName: "Mint", kg: "" },
-    { id: 44, tamilName: "சாப்பாடு இலை", englishName: "Banana Leaf", kg: "" },
-    { id: 45, tamilName: "டிபன் இலை", englishName: "Small Banana Leaf", kg: "" },
+    { id: 37, tamilName: "சிறு கீரை", englishName: "Small Greens", bundle: "" },
+    { id: 38, tamilName: "அரை கீரை", englishName: "Amaranth Greens", bundle: "" },
+    { id: 39, tamilName: "முடக்கத்தான் கீரை", englishName: "Balloon Vine Greens", bundle: "" },
+    { id: 40, tamilName: "எலுமிச்சை பழம்", englishName: "Lemon", count: "" },
+    { id: 41, tamilName: "கருவேப்பிலை", englishName: "Curry Leaves", bundle: "" },
+    { id: 42, tamilName: "கொத்தமல்லி", englishName: "Coriander", bundle: "" },
+    { id: 43, tamilName: "புதினா", englishName: "Mint", bundle: "" },
+    { id: 44, tamilName: "சாப்பாடு இலை", englishName: "Banana Leaf", count: "" },
+    { id: 45, tamilName: "டிபன் இலை", englishName: "Small Banana Leaf", count: "" },
   ])
 
   useEffect(() => {
@@ -63,12 +63,22 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
   }, [initialData])
 
   const handleInputChange = (id, value) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, kg: value } : item)))
+    setItems(
+      items.map((item) => {
+        if (item.id === 40 || item.id === 44 || item.id === 45) {
+          return item.id === id ? { ...item, count: value } : item
+        }
+        if (item.id === 37 || item.id === 38 || item.id === 39 || item.id === 41 || item.id === 42 || item.id === 43) {
+          return item.id === id ? { ...item, bundle: value } : item
+        }
+        return item.id === id ? { ...item, kg: value } : item
+      }),
+    )
   }
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.kg)
+      return items.filter((item) => item.kg || item.count || item.bundle)
     },
   }))
 
@@ -91,8 +101,8 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
                     <span className="english-text"> / Items</span>
                   </th>
                   <th className="measurement-header">
-                    <span className="tamil-text">கிலோ</span>
-                    <span className="english-text"> / Kg</span>
+                    <span className="tamil-text">அளவு</span>
+                    <span className="english-text"> / Measurement</span>
                   </th>
                 </tr>
               </thead>
@@ -110,9 +120,20 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
                         type="number"
                         className="form-control form-control-sm"
                         min="0"
-                        value={item.kg}
+                        value={item.kg || item.count || item.bundle || ""}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
-                        placeholder="Kg"
+                        placeholder={
+                          item.id === 40 || item.id === 44 || item.id === 45
+                            ? "Count"
+                            : item.id === 37 ||
+                                item.id === 38 ||
+                                item.id === 39 ||
+                                item.id === 41 ||
+                                item.id === 42 ||
+                                item.id === 43
+                              ? "கட்டு"
+                              : "Kg"
+                        }
                       />
                     </td>
                   </tr>

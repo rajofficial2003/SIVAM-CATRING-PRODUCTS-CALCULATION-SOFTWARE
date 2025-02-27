@@ -5,10 +5,10 @@ import "bootstrap/dist/css/bootstrap.min.css"
 
 const PoojaItemsForm = forwardRef(({ initialData }, ref) => {
   const [items, setItems] = useState([
-    { id: 1, tamilName: "மஞ்சள் தூள்", englishName: "Turmeric Powder", kg: "", grams: "" },
-    { id: 2, tamilName: "குங்குமம்", englishName: "Kumkum", kg: "", grams: "" },
-    { id: 3, tamilName: "கற்பூரம், வத்தி", englishName: "Camphor, Wicks", kg: "", grams: "" },
-    { id: 4, tamilName: "வெற்றிலைபாக்கு", englishName: "Betel Leaves & Nuts", kg: "", grams: "" },
+    { id: 1, tamilName: "மஞ்சள் தூள்", englishName: "Turmeric Powder", rs: "" },
+    { id: 2, tamilName: "குங்குமம்", englishName: "Kumkum", rs: "" },
+    { id: 3, tamilName: "கற்பூரம், வத்தி", englishName: "Camphor, Wicks", rs: "" },
+    { id: 4, tamilName: "வெற்றிலைபாக்கு", englishName: "Betel Leaves & Nuts", rs: "" },
   ])
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const PoojaItemsForm = forwardRef(({ initialData }, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.kg || item.grams)
+      return items.filter((item) => item.rs)
     },
   }))
 
@@ -53,12 +53,8 @@ const PoojaItemsForm = forwardRef(({ initialData }, ref) => {
                         <span className="english-text"> / Items</span>
                       </th>
                       <th className="measurement-header">
-                        <span className="tamil-text">கிலோ</span>
-                        <span className="english-text"> / Kg</span>
-                      </th>
-                      <th className="measurement-header">
-                        <span className="tamil-text">கிராம்</span>
-                        <span className="english-text"> / Grams</span>
+                        <span className="tamil-text">ரூபாய்</span>
+                        <span className="english-text"> / Rs</span>
                       </th>
                     </tr>
                   </thead>
@@ -76,19 +72,9 @@ const PoojaItemsForm = forwardRef(({ initialData }, ref) => {
                             type="number"
                             className="form-control form-control-sm"
                             min="0"
-                            value={item.kg}
-                            onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
-                            placeholder="Kg"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            className="form-control form-control-sm"
-                            min="0"
-                            value={item.grams}
-                            onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
-                            placeholder="Grams"
+                            value={item.rs}
+                            onChange={(e) => handleInputChange(item.id, "rs", e.target.value)}
+                            placeholder="Rs"
                           />
                         </td>
                       </tr>
@@ -107,4 +93,3 @@ const PoojaItemsForm = forwardRef(({ initialData }, ref) => {
 PoojaItemsForm.displayName = "PoojaItemsForm"
 
 export default PoojaItemsForm
-

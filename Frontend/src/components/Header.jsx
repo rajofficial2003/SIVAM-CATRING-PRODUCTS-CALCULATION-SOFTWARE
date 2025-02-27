@@ -44,7 +44,7 @@ const Header = () => {
             <img src="./assets/anamalayar.png" alt="Business Logo" style={logoStyle} />
           </div>
           <div className="col-md-8 text-center mb-3 mb-md-0">
-            <h1 style={businessNameStyle} className="py-1"> சாணாநந்தல் சிவம் </h1>
+            <h1 style={businessNameStyle} className="py-1"> சாணானந்தல் சிவம் </h1>
             <h2 style={businessNameStyle} className="py-1"> சமையல் காண்ட்ராக்ட் </h2>
             <h3 style={businessSubtitleStyle}>M.அருள்சங்கர், P.பாலாஜி</h3>
             <p style={businessAddressStyle}> தி.மலை  மாவட்டம் - 606 805</p>
