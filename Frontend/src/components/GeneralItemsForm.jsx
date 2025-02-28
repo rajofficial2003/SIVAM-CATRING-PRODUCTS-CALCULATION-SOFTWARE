@@ -53,7 +53,7 @@ const GeneralItemsForm = forwardRef(({ initialData }, ref) => {
     { id: 47, tamilName: "பாதாம் பருப்பு", englishName: "Almond Dal", kg: "", grams: "" },
     { id: 48, tamilName: "பிஸ்தா பருப்பு", englishName: "Pistachio Dal", kg: "", grams: "" },
     { id: 49, tamilName: "சாரை பருப்பு", englishName: "Sarai Dal", kg: "", grams: "" },
-    { id: 50, tamilName: "அப்பளம் (பாப்புலர்)", englishName: "Appalam (Popular)", kg: "", grams: "" },
+    { id: 50, tamilName: "அப்பளம் (பாப்புலர்)", englishName: "Appalam (Popular)", bundle: "" },
     { id: 51, tamilName: "சிப்ஸ் அப்பளம்", englishName: "chips Appalam", kg: "", grams: "" },
     { id: 52, tamilName: "கான் சிப்ஸ்", englishName: "Corn Chips", kg: "", grams: "" },
     { id: 53, tamilName: "காலிபிளவர் சிப்ஸ்", englishName: "Cauliflower Chips", kg: "", grams: "" },
@@ -62,7 +62,7 @@ const GeneralItemsForm = forwardRef(({ initialData }, ref) => {
     { id: 56, tamilName: "வருகல்லை", englishName: "Varukallai", kg: "", grams: "" },
     { id: 57, tamilName: "மணிலாப் பயிறு", englishName: "Manila Beans", kg: "", grams: "" },
     { id: 58, tamilName: "வருத்த மணிலாப் பயிறு", englishName: "Roasted Manila Beans", kg: "", grams: "" },
-    { id: 59, tamilName: "மில்க் டின்", englishName: "Milk Tin", kg: "", grams: "" },
+    { id: 59, tamilName: "மில்க் டின்", englishName: "Milk Tin", count: "" },
     { id: 60, tamilName: "மாஸ் பவுடர்", englishName: "Malt Powder", kg: "", grams: "" },
     { id: 61, tamilName: "பாதாம் பவுடர்", englishName: "Almond Powder", kg: "", grams: "" },
     { id: 62, tamilName: "போன்விட்டா", englishName: "Bournvita", kg: "", grams: "" },
@@ -105,9 +105,90 @@ const GeneralItemsForm = forwardRef(({ initialData }, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.kg || item.grams)
+      return items.filter((item) => item.kg || item.grams || item.bundle || item.count)
     },
   }))
+
+  const renderItemsTable = () => (
+    <div className="table-responsive">
+      <table className="table table-bordered table-hover mb-0">
+        <thead className="sticky-top" style={{ backgroundColor: "#f8f9fa" }}>
+          <tr>
+            <th className="item-name-header">
+              <span className="tamil-text">பொருட்கள்</span>
+              <span className="english-text"> / Items</span>
+            </th>
+            <th className="measurement-header">
+              <span className="tamil-text">கிலோ/கட்டு</span>
+              <span className="english-text"> / Kg/Bundle</span>
+            </th>
+            <th className="measurement-header">
+              <span className="tamil-text">கிராம்</span>
+              <span className="english-text"> / Grams</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => (
+            <tr key={item.id}>
+              <td>
+                <label className="form-label mb-0">
+                  <span className="tamil-text">{item.tamilName}</span>
+                  <span className="english-text"> / {item.englishName}</span>
+                </label>
+              </td>
+              {item.id === 50 ? (
+                <td colSpan="2">
+                  <input
+                    type="number"
+                    className="form-control form-control-sm"
+                    min="0"
+                    value={item.bundle}
+                    onChange={(e) => handleInputChange(item.id, "bundle", e.target.value)}
+                    placeholder="கட்டு"
+                  />
+                </td>
+              ) : item.id === 59 ? (
+                <td colSpan="2">
+                  <input
+                    type="number"
+                    className="form-control form-control-sm"
+                    min="0"
+                    value={item.count}
+                    onChange={(e) => handleInputChange(item.id, "count", e.target.value)}
+                    placeholder="Count"
+                  />
+                </td>
+              ) : (
+                <>
+                  <td>
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      min="0"
+                      value={item.kg}
+                      onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
+                      placeholder="Kg"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      min="0"
+                      value={item.grams}
+                      onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
+                      placeholder="Grams"
+                    />
+                  </td>
+                </>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 
   return (
     <div className="container mb-4">
@@ -118,60 +199,7 @@ const GeneralItemsForm = forwardRef(({ initialData }, ref) => {
             <span className="english-text"> / Grocery Items</span>
           </h3>
         </div>
-        <div className="card-body p-0">
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover mb-0">
-              <thead className="sticky-top" style={{ backgroundColor: "#f8f9fa" }}>
-                <tr>
-                  <th className="item-name-header">
-                    <span className="tamil-text">பொருட்கள்</span>
-                    <span className="english-text"> / Items</span>
-                  </th>
-                  <th className="measurement-header">
-                    <span className="tamil-text">கிலோ</span>
-                    <span className="english-text"> / Kg</span>
-                  </th>
-                  <th className="measurement-header">
-                    <span className="tamil-text">கிராம்</span>
-                    <span className="english-text"> / Grams</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <label className="form-label mb-0">
-                        <span className="tamil-text">{item.tamilName}</span>
-                        <span className="english-text"> / {item.englishName}</span>
-                      </label>
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        min="0"
-                        value={item.kg}
-                        onChange={(e) => handleInputChange(item.id, "kg", e.target.value)}
-                        placeholder="Kg"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        min="0"
-                        value={item.grams}
-                        onChange={(e) => handleInputChange(item.id, "grams", e.target.value)}
-                        placeholder="Grams"
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div className="card-body p-0">{renderItemsTable()}</div>
       </div>
     </div>
   )

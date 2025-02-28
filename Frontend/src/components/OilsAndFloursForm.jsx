@@ -9,12 +9,12 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
     { id: 3, tamilName: "நல்லெண்ணெய் (இதயம்)", englishName: "Gingelly Oil (Idhayam)", liters: "", ml: "" },
     { id: 4, tamilName: "கடலை எண்ணெய் ரீஃபைன்ட்", englishName: "Refined Groundnut Oil", liters: "", ml: "" },
     { id: 5, tamilName: "நெய் (ஆவின்)", englishName: "Ghee (Aavin)", liters: "", ml: "" },
-    { id: 6, tamilName: "டால்டா", englishName: "Dalda", liters: "", ml: "" },
+    { id: 6, tamilName: "டால்டா", englishName: "Dalda", kg: "" },
     { id: 7, tamilName: "ரூபினி பாமாயில்", englishName: "Rupini Palm Oil", liters: "", ml: "" },
-    { id: 8, tamilName: "வெண்ணை (ஊத்துக் குளி)", englishName: "Butter (Uzhuthu Kuli)", liters: "", ml: "" },
-    { id: 9, tamilName: "பன்னீர்", englishName: "Rose Water", liters: "", ml: "" },
-    { id: 10, tamilName: "கோவா (சர்க்கரை)", englishName: "Khova (Sweet)", liters: "", ml: "" },
-    { id: 11, tamilName: "சர்க்கரை இல்லாத கோவா", englishName: "Sugar-free Khova", liters: "", ml: "" },
+    { id: 8, tamilName: "வெண்ணை (ஊத்துக் குளி)", englishName: "Butter (Uzhuthu Kuli)", kg: "" },
+    { id: 9, tamilName: "பன்னீர்", englishName: "Rose Water", kg: "" },
+    { id: 10, tamilName: "கோவா (சர்க்கரை)", englishName: "Khova (Sweet)", kg: "" },
+    { id: 11, tamilName: "சர்க்கரை இல்லாத கோவா", englishName: "Sugar-free Khova", kg: "" },
     { id: 12, tamilName: "பிரட்", englishName: "Bread", liters: "", ml: "" },
     { id: 13, tamilName: "காளான் (பட்டன்)", englishName: "Musroom (Button)", liters: "", ml: "" },
   ])
@@ -62,7 +62,7 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
   useImperativeHandle(ref, () => ({
     getFormData: () => {
       return {
-        oils: oilItems.filter((item) => item.liters || item.ml),
+        oils: oilItems.filter((item) => item.liters || item.ml || item.kg),
         flours: flourItems.filter((item) => item.kg),
       }
     },
@@ -106,26 +106,41 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
                         <span className="english-text"> / {item.englishName}</span>
                       </label>
                     </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        min="0"
-                        value={item.liters}
-                        onChange={(e) => handleOilInputChange(item.id, "liters", e.target.value)}
-                        placeholder="Liters"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        className="form-control form-control-sm"
-                        min="0"
-                        value={item.ml}
-                        onChange={(e) => handleOilInputChange(item.id, "ml", e.target.value)}
-                        placeholder="ml"
-                      />
-                    </td>
+                    {item.id === 6 || item.id === 8 || item.id === 9 || item.id === 10 || item.id === 11 ? (
+                      <td colSpan="2">
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          min="0"
+                          value={item.kg}
+                          onChange={(e) => handleOilInputChange(item.id, "kg", e.target.value)}
+                          placeholder="Kg"
+                        />
+                      </td>
+                    ) : (
+                      <>
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.liters}
+                            onChange={(e) => handleOilInputChange(item.id, "liters", e.target.value)}
+                            placeholder="Liters"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.ml}
+                            onChange={(e) => handleOilInputChange(item.id, "ml", e.target.value)}
+                            placeholder="ml"
+                          />
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>

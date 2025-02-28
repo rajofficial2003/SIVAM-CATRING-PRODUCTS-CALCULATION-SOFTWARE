@@ -73,24 +73,13 @@ const OrderDetails = () => {
                     </td>
                     {columns.map((col, colIndex) => {
                       const key = col.toLowerCase().replace(/ /g, "")
-                      let value = item[key] || "-"
+                      let value = "-"
                       if (title === "Sauce and Supplies") {
-                        if (item.liters !== undefined) {
-                          value = `${item.liters} (Liters)`
-                        } else if (item.quantity !== undefined) {
-                          value = item.quantity
-                        }
+                        value = item.liters !== undefined ? `${item.liters} (Liters)` : item.quantity || "-"
                       } else if (title === "Vegetables") {
                         if (item.id === 40 || item.id === 44 || item.id === 45) {
                           value = `${item.count} (Count)`
-                        } else if (
-                          item.id === 37 ||
-                          item.id === 38 ||
-                          item.id === 39 ||
-                          item.id === 41 ||
-                          item.id === 42 ||
-                          item.id === 43
-                        ) {
+                        } else if ([37, 38, 39, 41, 42, 43].includes(item.id)) {
                           value = `${item.bundle} (கட்டு)`
                         } else {
                           value = `${item.kg} (Kg)`
@@ -99,6 +88,34 @@ const OrderDetails = () => {
                         value = `${item.pockets} (Pockets)`
                       } else if (title === "Flour Types") {
                         value = `${item.kg} (Kg)`
+                      } else if (title === "General Items") {
+                        if (item.id === 50) {
+                          if (colIndex === 0) {
+                            value = `${item.bundle} (கட்டு)`
+                          } else {
+                            value = "-"
+                          }
+                        } else if (item.id === 59) {
+                          if (colIndex === 0) {
+                            value = `${item.count} (Count)`
+                          } else {
+                            value = "-"
+                          }
+                        } else if (key === "kg/bundle(கட்டு)") {
+                          value = item.kg ? `${item.kg} (Kg)` : "-"
+                        } else if (key === "grams") {
+                          value = item.grams ? `${item.grams} (Grams)` : "-"
+                        }
+                      } else if (title === "Pooja Items") {
+                        value = `${item.rs} (Rs)`
+                      } else if (title === "Oil Types") {
+                        if (item.id === 6 || item.id === 8 || item.id === 9 || item.id === 10 || item.id === 11) {
+                          value = `${item.kg} (Kg)`
+                        } else {
+                          value = item.liters ? `${item.liters} (Liters)` : item.ml ? `${item.ml} (ml)` : "-"
+                        }
+                      } else {
+                        value = item[key] || "-"
                       }
                       return <td key={colIndex}>{value}</td>
                     })}
@@ -149,24 +166,13 @@ const OrderDetails = () => {
             `${item.tamilName} / ${item.englishName}`,
             ...columns.map((col) => {
               const key = col.toLowerCase().replace(/ /g, "")
-              let value = item[key] || "-"
+              let value = "-"
               if (title === "Sauce and Supplies") {
-                if (item.liters !== undefined) {
-                  value = `${item.liters} (Liters)`
-                } else if (item.quantity !== undefined) {
-                  value = item.quantity
-                }
+                value = item.liters !== undefined ? `${item.liters} (Liters)` : item.quantity || "-"
               } else if (title === "Vegetables") {
                 if (item.id === 40 || item.id === 44 || item.id === 45) {
                   value = `${item.count} (Count)`
-                } else if (
-                  item.id === 37 ||
-                  item.id === 38 ||
-                  item.id === 39 ||
-                  item.id === 41 ||
-                  item.id === 42 ||
-                  item.id === 43
-                ) {
+                } else if ([37, 38, 39, 41, 42, 43].includes(item.id)) {
                   value = `${item.bundle} (கட்டு)`
                 } else {
                   value = `${item.kg} (Kg)`
@@ -175,6 +181,34 @@ const OrderDetails = () => {
                 value = `${item.pockets} (Pockets)`
               } else if (title === "Flour Types") {
                 value = `${item.kg} (Kg)`
+              } else if (title === "General Items") {
+                if (item.id === 50) {
+                  if (col.toLowerCase().includes("kg") || col.toLowerCase().includes("bundle")) {
+                    value = `${item.bundle} (கட்டு)`
+                  } else {
+                    value = "-"
+                  }
+                } else if (item.id === 59) {
+                  if (col.toLowerCase().includes("kg") || col.toLowerCase().includes("bundle")) {
+                    value = `${item.count} (Count)`
+                  } else {
+                    value = "-"
+                  }
+                } else if (key === "kg/bundle(கட்டு)") {
+                  value = item.kg ? `${item.kg} (Kg)` : "-"
+                } else if (key === "grams") {
+                  value = item.grams ? `${item.grams} (Grams)` : "-"
+                }
+              } else if (title === "Pooja Items") {
+                value = `${item.rs} (Rs)`
+              } else if (title === "Oil Types") {
+                if (item.id === 6 || item.id === 8 || item.id === 9 || item.id === 10 || item.id === 11) {
+                  value = `${item.kg} (Kg)`
+                } else {
+                  value = item.liters ? `${item.liters} (Liters)` : item.ml ? `${item.ml} (ml)` : "-"
+                }
+              } else {
+                value = item[key] || "-"
               }
               return value
             }),
@@ -196,7 +230,7 @@ const OrderDetails = () => {
       }
 
       addItemsTable(order.poojaItems, "Pooja Items", ["Rs"])
-      addItemsTable(order.generalItems, "General Items", ["Kg", "Grams"])
+      addItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])
       addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
       addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
       addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])
@@ -324,6 +358,7 @@ const OrderDetails = () => {
       </div>
 
       {/* Customer Details */}
+
       <div className="card shadow-sm mb-5">
         <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
           <h2 className="card-title h5 mb-0">Customer Details</h2>
@@ -368,7 +403,7 @@ const OrderDetails = () => {
       {renderItemsTable(order.poojaItems, "Pooja Items", ["Rs"])}
 
       {/* General Items */}
-      {renderItemsTable(order.generalItems, "General Items", ["Kg", "Grams"])}
+      {renderItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])}
 
       {/* Rice and Pulses */}
       {renderItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])}
