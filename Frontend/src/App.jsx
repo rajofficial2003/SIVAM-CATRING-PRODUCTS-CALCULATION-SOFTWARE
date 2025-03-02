@@ -1,33 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { BrowserRouter as Router, Routes, Route, NavLink, useLocation, Navigate, useNavigate } from "react-router-dom"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth } from "./firebase/config"
-import LoginPage from "./pages/LoginPage"
+import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from "react-router-dom"
 import Header from "./components/Header"
 import Footer from "./components/Footer"
 import AddOrder from "./pages/AddOrder"
 import OrdersPage from "./pages/OrdersPage"
 import OrderDetails from "./pages/OrderDetails"
 import SharedOrderDetails from "./pages/SharedOrderDetails"
-import { FaArrowUp, FaPlus, FaList, FaSignOutAlt } from "react-icons/fa"
+import { FaArrowUp, FaPlus, FaList } from "react-icons/fa"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "./App.css"
 
 function NavBar() {
   const location = useLocation()
   const isSharedOrder = location.pathname.startsWith("/shared-order")
-  const navigate = useNavigate()
-
-  const handleLogout = async () => {
-    try {
-      await auth.signOut()
-      navigate("/login")
-    } catch (error) {
-      console.error("Error signing out:", error)
-    }
-  }
 
   if (isSharedOrder) {
     return null
@@ -52,10 +39,6 @@ function NavBar() {
             <FaList className="me-2" />
             <span>View Orders</span>
           </NavLink>
-          <button className="nav-link premium-btn" onClick={handleLogout}>
-            <FaSignOutAlt className="me-2" />
-            <span>Logout</span>
-          </button>
         </div>
       </div>
     </nav>
@@ -64,8 +47,6 @@ function NavBar() {
 
 function App() {
   const [showBackToTop, setShowBackToTop] = useState(false)
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,15 +61,6 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user)
-      setLoading(false)
-    })
-
-    return () => unsubscribe()
-  }, [])
-
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -96,60 +68,21 @@ function App() {
     })
   }
 
-  const ProtectedRoute = ({ children }) => {
-    if (loading) {
-      return <div>Loading...</div>
-    }
-    if (!user) {
-      return <Navigate to="/login" />
-    }
-    return children
-  }
-
   return (
     <Router>
       <div className="app-container d-flex flex-column min-vh-100">
-        {user && <Header />}
-        {user && <NavBar />}
+        <Header />
+        <NavBar />
         <main className="flex-grow-1" style={{ backgroundColor: "#ffffff" }}>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AddOrder />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders"
-              element={
-                <ProtectedRoute>
-                  <OrdersPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders/:orderId"
-              element={
-                <ProtectedRoute>
-                  <OrderDetails />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders/:orderId/edit"
-              element={
-                <ProtectedRoute>
-                  <AddOrder />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<AddOrder />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetails />} />
+            <Route path="/orders/:orderId/edit" element={<AddOrder />} />
             <Route path="/shared-order/:orderId" element={<SharedOrderDetails />} />
           </Routes>
         </main>
-        {user && <Footer />}
+        <Footer />
         {showBackToTop && (
           <button className="back-to-top premium-btn" onClick={scrollToTop} aria-label="Back to top">
             <FaArrowUp />
