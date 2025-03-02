@@ -74,13 +74,25 @@ const OrderDetails = () => {
                     {columns.map((col, colIndex) => {
                       const key = col.toLowerCase().replace(/ /g, "")
                       let value = "-"
-                      if (title === "Sauce and Supplies") {
-                        value = item.liters !== undefined ? `${item.liters} (Liters)` : item.quantity || "-"
+                      if (title === "Oil Types") {
+                        if (key === "kg") {
+                          value = item.kg ? `${item.kg} (Kg)` : "-"
+                        } else if (key === "liters") {
+                          value = item.liters ? `${item.liters} (Liters)` : "-"
+                        } else if (key === "ml") {
+                          value = item.ml ? `${item.ml} (ml)` : "-"
+                        } else if (key === "count") {
+                          value = item.count ? `${item.count} (Count)` : "-"
+                        } else if (key === "grams") {
+                          value = item.grams ? `${item.grams} (Grams)` : "-"
+                        }
                       } else if (title === "Vegetables") {
                         if (item.id === 40 || item.id === 44 || item.id === 45) {
                           value = `${item.count} (Count)`
-                        } else if ([37, 38, 39, 41, 42, 43].includes(item.id)) {
+                        } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
                           value = `${item.bundle} (கட்டு)`
+                        } else if ([14, 15, 34, 35, 36].includes(item.id)) {
+                          value = `${item.quantity} (Quantity)`
                         } else {
                           value = `${item.kg} (Kg)`
                         }
@@ -90,17 +102,9 @@ const OrderDetails = () => {
                         value = `${item.kg} (Kg)`
                       } else if (title === "General Items") {
                         if (item.id === 50) {
-                          if (colIndex === 0) {
-                            value = `${item.bundle} (கட்டு)`
-                          } else {
-                            value = "-"
-                          }
+                          value = `${item.bundle} (கட்டு)`
                         } else if (item.id === 59) {
-                          if (colIndex === 0) {
-                            value = `${item.count} (Count)`
-                          } else {
-                            value = "-"
-                          }
+                          value = `${item.count} (Count)`
                         } else if (key === "kg/bundle(கட்டு)") {
                           value = item.kg ? `${item.kg} (Kg)` : "-"
                         } else if (key === "grams") {
@@ -108,11 +112,22 @@ const OrderDetails = () => {
                         }
                       } else if (title === "Pooja Items") {
                         value = `${item.rs} (Rs)`
-                      } else if (title === "Oil Types") {
-                        if (item.id === 6 || item.id === 8 || item.id === 9 || item.id === 10 || item.id === 11) {
-                          value = `${item.kg} (Kg)`
+                      } else if (title === "Sauce and Supplies") {
+                        if (item.quantity) {
+                          value = `${item.quantity} (Quantity)`
+                        } else if (item.liters) {
+                          value = `${item.liters} (Liters)`
+                        } else if (item.meter) {
+                          value = `${item.meter} (Meter)`
                         } else {
-                          value = item.liters ? `${item.liters} (Liters)` : item.ml ? `${item.ml} (ml)` : "-"
+                          value = "-"
+                        }
+                      } else if (title === "Fruits") {
+                        if (item.id === 2 || item.id === 6) {
+                          // Jackfruit and Pineapple
+                          value = `${item.quantity} (Quantity)`
+                        } else {
+                          value = `${item.kg} (Kg)`
                         }
                       } else {
                         value = item[key] || "-"
@@ -167,13 +182,25 @@ const OrderDetails = () => {
             ...columns.map((col) => {
               const key = col.toLowerCase().replace(/ /g, "")
               let value = "-"
-              if (title === "Sauce and Supplies") {
-                value = item.liters !== undefined ? `${item.liters} (Liters)` : item.quantity || "-"
+              if (title === "Oil Types") {
+                if (key === "kg") {
+                  value = item.kg ? `${item.kg} (Kg)` : "-"
+                } else if (key === "liters") {
+                  value = item.liters ? `${item.liters} (Liters)` : "-"
+                } else if (key === "ml") {
+                  value = item.ml ? `${item.ml} (ml)` : "-"
+                } else if (key === "count") {
+                  value = item.count ? `${item.count} (Count)` : "-"
+                } else if (key === "grams") {
+                  value = item.grams ? `${item.grams} (Grams)` : "-"
+                }
               } else if (title === "Vegetables") {
                 if (item.id === 40 || item.id === 44 || item.id === 45) {
                   value = `${item.count} (Count)`
-                } else if ([37, 38, 39, 41, 42, 43].includes(item.id)) {
+                } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
                   value = `${item.bundle} (கட்டு)`
+                } else if ([14, 15, 34, 35, 36].includes(item.id)) {
+                  value = `${item.quantity} (Quantity)`
                 } else {
                   value = `${item.kg} (Kg)`
                 }
@@ -183,17 +210,9 @@ const OrderDetails = () => {
                 value = `${item.kg} (Kg)`
               } else if (title === "General Items") {
                 if (item.id === 50) {
-                  if (col.toLowerCase().includes("kg") || col.toLowerCase().includes("bundle")) {
-                    value = `${item.bundle} (கட்டு)`
-                  } else {
-                    value = "-"
-                  }
+                  value = `${item.bundle} (கட்டு)`
                 } else if (item.id === 59) {
-                  if (col.toLowerCase().includes("kg") || col.toLowerCase().includes("bundle")) {
-                    value = `${item.count} (Count)`
-                  } else {
-                    value = "-"
-                  }
+                  value = `${item.count} (Count)`
                 } else if (key === "kg/bundle(கட்டு)") {
                   value = item.kg ? `${item.kg} (Kg)` : "-"
                 } else if (key === "grams") {
@@ -201,11 +220,22 @@ const OrderDetails = () => {
                 }
               } else if (title === "Pooja Items") {
                 value = `${item.rs} (Rs)`
-              } else if (title === "Oil Types") {
-                if (item.id === 6 || item.id === 8 || item.id === 9 || item.id === 10 || item.id === 11) {
-                  value = `${item.kg} (Kg)`
+              } else if (title === "Sauce and Supplies") {
+                if (item.quantity) {
+                  value = `${item.quantity} (Quantity)`
+                } else if (item.liters) {
+                  value = `${item.liters} (Liters)`
+                } else if (item.meter) {
+                  value = `${item.meter} (Meter)`
                 } else {
-                  value = item.liters ? `${item.liters} (Liters)` : item.ml ? `${item.ml} (ml)` : "-"
+                  value = "-"
+                }
+              } else if (title === "Fruits") {
+                if (item.id === 2 || item.id === 6) {
+                  // Jackfruit and Pineapple
+                  value = `${item.quantity} (Quantity)`
+                } else {
+                  value = `${item.kg} (Kg)`
                 }
               } else {
                 value = item[key] || "-"
@@ -234,11 +264,11 @@ const OrderDetails = () => {
       addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
       addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
       addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])
-      addItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Liters", "ML"])
+      addItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])
       addItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])
       addItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])
-      addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters"])
-      addItemsTable(order.fruits, "Fruits", ["Kg", "Grams"])
+      addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])
+      addItemsTable(order.fruits, "Fruits", ["Measurement"])
       addItemsTable(order.vegetables, "Vegetables", ["Measurement"])
       addItemsTable(order.utensils, "Utensils", ["Count"])
       addItemsTable(order.idliBatter, "Idli Batter", ["Count"])
@@ -358,7 +388,6 @@ const OrderDetails = () => {
       </div>
 
       {/* Customer Details */}
-
       <div className="card shadow-sm mb-5">
         <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
           <h2 className="card-title h5 mb-0">Customer Details</h2>
@@ -413,17 +442,17 @@ const OrderDetails = () => {
       {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])}
 
       {/* Oils and Flours */}
-      {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Liters", "ML"])}
+      {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])}
       {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])}
 
       {/* Masala Items */}
       {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}
 
       {/* Sauce and Supplies */}
-      {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters"])}
+      {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])}
 
       {/* Fruits */}
-      {renderItemsTable(order.fruits, "Fruits", ["Kg", "Grams"])}
+      {renderItemsTable(order.fruits, "Fruits", ["Measurement"])}
 
       {/* Vegetables */}
       {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}

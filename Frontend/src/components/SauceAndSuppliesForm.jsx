@@ -28,7 +28,7 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
     { id: 22, tamilName: "காலை-தயிர்", englishName: "Morning-Curd", liters: "" },
     { id: 23, tamilName: "கேஸ் சிலிண்டர்", englishName: "Gas Cylinder", quantity: "" },
     { id: 24, tamilName: "வெள்ளைத் துண்டு", englishName: "White Cloth", quantity: "" },
-    { id: 25, tamilName: "காடாத் துணி", englishName: "Gada Cloth", quantity: "" },
+    { id: 25, tamilName: "காடாத் துணி", englishName: "Gada Cloth", meter: "" },
     { id: 26, tamilName: "தென்னந்துடைப்பம்", englishName: "Coconut Broom", quantity: "" },
   ])
 
@@ -49,7 +49,7 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.quantity || item.liters)
+      return items.filter((item) => item.quantity || item.liters || item.meter)
     },
   }))
 
@@ -73,7 +73,7 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
                   </th>
                   <th className="measurement-header">
                     <span className="tamil-text">அளவு</span>
-                    <span className="english-text"> / Quantity/Liters</span>
+                    <span className="english-text"> / Quantity/Liters/Meter</span>
                   </th>
                 </tr>
               </thead>
@@ -91,11 +91,17 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
                         type="number"
                         className="form-control form-control-sm"
                         min="0"
-                        value={item.quantity || item.liters || ""}
+                        value={item.quantity || item.liters || item.meter || ""}
                         onChange={(e) =>
-                          handleInputChange(item.id, e.target.value, item.liters !== undefined ? "liters" : "quantity")
+                          handleInputChange(
+                            item.id,
+                            e.target.value,
+                            item.liters !== undefined ? "liters" : item.meter !== undefined ? "meter" : "quantity"
+                          )
                         }
-                        placeholder={item.liters !== undefined ? "Liters" : "Quantity"}
+                        placeholder={
+                          item.liters !== undefined ? "Liters" : item.meter !== undefined ? "Meter" : "Quantity"
+                        }
                       />
                     </td>
                   </tr>
@@ -112,4 +118,3 @@ const SauceAndSuppliesForm = forwardRef(({ initialData }, ref) => {
 SauceAndSuppliesForm.displayName = "SauceAndSuppliesForm"
 
 export default SauceAndSuppliesForm
-

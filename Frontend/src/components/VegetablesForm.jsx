@@ -17,8 +17,8 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
     { id: 11, tamilName: "குட மிளகாய்", englishName: "Capsicum", kg: "" },
     { id: 12, tamilName: "மஞ்சள் பூசணிக்காய்", englishName: "Yellow Pumpkin", kg: "" },
     { id: 13, tamilName: "கல்யாணப் பூசணிக்காய்", englishName: "Ash Gourd", kg: "" },
-    { id: 14, tamilName: "வாழைக்காய்", englishName: "Raw Banana", kg: "" },
-    { id: 15, tamilName: "தேங்காய் (பொல்லாச்சி)", englishName: "Coconut (Pollachi)", kg: "" },
+    { id: 14, tamilName: "வாழைக்காய்", englishName: "Raw Banana", quantity: "" },
+    { id: 15, tamilName: "தேங்காய் (பொல்லாச்சி)", englishName: "Coconut (Pollachi)", quantity: "" },
     { id: 16, tamilName: "பெரிய வெங்காயம்", englishName: "Big Onion", kg: "" },
     { id: 17, tamilName: "சம்பா வெங்காயம்", englishName: "Sambar Onion", kg: "" },
     { id: 18, tamilName: "தக்காளி", englishName: "Tomato", kg: "" },
@@ -37,18 +37,19 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
     { id: 31, tamilName: "பெரிய உருளை (சிப்ஸ்)", englishName: "Big Potato (Chips)", kg: "" },
     { id: 32, tamilName: "சர்க்கரை வள்ளிக்கிழங்கு", englishName: "Sweet Potato", kg: "" },
     { id: 33, tamilName: "சட்டி கருணைக்கிழங்கு", englishName: "Yam", kg: "" },
-    { id: 34, tamilName: "வாழைப்பூ", englishName: "Banana Flower", kg: "" },
-    { id: 35, tamilName: "வாழைத் தண்டு", englishName: "Banana Stem", kg: "" },
-    { id: 36, tamilName: "காலிபிளவர் பூ", englishName: "Cauliflower", kg: "" },
+    { id: 34, tamilName: "வாழைப்பூ", englishName: "Banana Flower", quantity: "" },
+    { id: 35, tamilName: "வாழைத் தண்டு", englishName: "Banana Stem", quantity: "" },
+    { id: 36, tamilName: "காலிபிளவர் பூ", englishName: "Cauliflower", quantity: "" },
     { id: 37, tamilName: "சிறு கீரை", englishName: "Small Greens", bundle: "" },
     { id: 38, tamilName: "அரை கீரை", englishName: "Amaranth Greens", bundle: "" },
     { id: 39, tamilName: "முடக்கத்தான் கீரை", englishName: "Balloon Vine Greens", bundle: "" },
     { id: 40, tamilName: "எலுமிச்சை பழம்", englishName: "Lemon", count: "" },
-    { id: 41, tamilName: "கருவேப்பிலை", englishName: "Curry Leaves", bundle: "" },
+    { id: 41, tamilName: "கருவேப்பிலை", englishName: "Curry Leaves", kg: "" },
     { id: 42, tamilName: "கொத்தமல்லி", englishName: "Coriander", bundle: "" },
     { id: 43, tamilName: "புதினா", englishName: "Mint", bundle: "" },
     { id: 44, tamilName: "சாப்பாடு இலை", englishName: "Banana Leaf", count: "" },
     { id: 45, tamilName: "டிபன் இலை", englishName: "Small Banana Leaf", count: "" },
+    { id: 46, tamilName: "வெங்காயம் தண்டு", englishName: "Onion Stalk", bundle: "" },
   ])
 
   useEffect(() => {
@@ -68,8 +69,11 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
         if (item.id === 40 || item.id === 44 || item.id === 45) {
           return item.id === id ? { ...item, count: value } : item
         }
-        if (item.id === 37 || item.id === 38 || item.id === 39 || item.id === 41 || item.id === 42 || item.id === 43) {
+        if (item.id === 37 || item.id === 38 || item.id === 39 || item.id === 42 || item.id === 43 || item.id === 46) {
           return item.id === id ? { ...item, bundle: value } : item
+        }
+        if (item.id === 14 || item.id === 15 || item.id === 34 || item.id === 35 || item.id === 36) {
+          return item.id === id ? { ...item, quantity: value } : item
         }
         return item.id === id ? { ...item, kg: value } : item
       }),
@@ -78,7 +82,7 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.kg || item.count || item.bundle)
+      return items.filter((item) => item.kg || item.count || item.bundle || item.quantity)
     },
   }))
 
@@ -120,7 +124,7 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
                         type="number"
                         className="form-control form-control-sm"
                         min="0"
-                        value={item.kg || item.count || item.bundle || ""}
+                        value={item.kg || item.count || item.bundle || item.quantity || ""}
                         onChange={(e) => handleInputChange(item.id, e.target.value)}
                         placeholder={
                           item.id === 40 || item.id === 44 || item.id === 45
@@ -128,11 +132,13 @@ const VegetablesForm = forwardRef(({ initialData }, ref) => {
                             : item.id === 37 ||
                                 item.id === 38 ||
                                 item.id === 39 ||
-                                item.id === 41 ||
                                 item.id === 42 ||
-                                item.id === 43
+                                item.id === 43 ||
+                                item.id === 46
                               ? "கட்டு"
-                              : "Kg"
+                              : item.id === 14 || item.id === 15 || item.id === 34 || item.id === 35 || item.id === 36
+                                ? "Quantity"
+                                : "Kg"
                         }
                       />
                     </td>

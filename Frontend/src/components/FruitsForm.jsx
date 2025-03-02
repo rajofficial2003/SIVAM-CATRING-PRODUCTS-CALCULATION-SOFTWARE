@@ -5,11 +5,11 @@ import { useState, forwardRef, useImperativeHandle, useEffect } from "react"
 const FruitsForm = forwardRef(({ initialData }, ref) => {
   const [items, setItems] = useState([
     { id: 1, tamilName: "மாம்பழம்", englishName: "Mango", kg: "" },
-    { id: 2, tamilName: "பலாப்பழம்", englishName: "Jackfruit", kg: "" },
+    { id: 2, tamilName: "பலாப்பழம்", englishName: "Jackfruit", quantity: "" },
     { id: 3, tamilName: "வாழைப்பழம் (மஞ்சள்)", englishName: "Banana (Yellow)", kg: "" },
     { id: 4, tamilName: "பச்சை வாழைப்பழம்", englishName: "Green Banana", kg: "" },
     { id: 5, tamilName: "கற்பூர வாழைப்பழம்", englishName: "Karpooravalli Banana", kg: "" },
-    { id: 6, tamilName: "அன்னாச்சி பழம்", englishName: "Pineapple", kg: "" },
+    { id: 6, tamilName: "அன்னாச்சி பழம்", englishName: "Pineapple", quantity: "" },
     { id: 7, tamilName: "ஆப்பிள் பழம்", englishName: "Apple", kg: "" },
     { id: 8, tamilName: "தர்பூசணி பழம்", englishName: "Watermelon", kg: "" },
     { id: 9, tamilName: "பப்பாளி பழம்", englishName: "Papaya", kg: "" },
@@ -28,13 +28,13 @@ const FruitsForm = forwardRef(({ initialData }, ref) => {
     }
   }, [initialData])
 
-  const handleInputChange = (id, value) => {
-    setItems(items.map((item) => (item.id === id ? { ...item, kg: value } : item)))
+  const handleInputChange = (id, value, field) => {
+    setItems(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
   }
 
   useImperativeHandle(ref, () => ({
     getFormData: () => {
-      return items.filter((item) => item.kg)
+      return items.filter((item) => item.kg || item.quantity)
     },
   }))
 
@@ -57,8 +57,8 @@ const FruitsForm = forwardRef(({ initialData }, ref) => {
                     <span className="english-text"> / Items</span>
                   </th>
                   <th className="measurement-header">
-                    <span className="tamil-text">கிலோ</span>
-                    <span className="english-text"> / Kg</span>
+                    <span className="tamil-text">அளவு</span>
+                    <span className="english-text"> / Measurement</span>
                   </th>
                 </tr>
               </thead>
@@ -76,9 +76,11 @@ const FruitsForm = forwardRef(({ initialData }, ref) => {
                         type="number"
                         className="form-control form-control-sm"
                         min="0"
-                        value={item.kg}
-                        onChange={(e) => handleInputChange(item.id, e.target.value)}
-                        placeholder="Kg"
+                        value={item.id === 2 || item.id === 6 ? item.quantity : item.kg}
+                        onChange={(e) =>
+                          handleInputChange(item.id, e.target.value, item.id === 2 || item.id === 6 ? "quantity" : "kg")
+                        }
+                        placeholder={item.id === 2 || item.id === 6 ? "Quantity" : "Kg"}
                       />
                     </td>
                   </tr>

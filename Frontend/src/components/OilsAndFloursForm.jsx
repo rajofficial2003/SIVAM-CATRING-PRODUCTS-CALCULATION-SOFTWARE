@@ -15,8 +15,9 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
     { id: 9, tamilName: "பன்னீர்", englishName: "Rose Water", kg: "" },
     { id: 10, tamilName: "கோவா (சர்க்கரை)", englishName: "Khova (Sweet)", kg: "" },
     { id: 11, tamilName: "சர்க்கரை இல்லாத கோவா", englishName: "Sugar-free Khova", kg: "" },
-    { id: 12, tamilName: "பிரட்", englishName: "Bread", liters: "", ml: "" },
-    { id: 13, tamilName: "காளான் (பட்டன்)", englishName: "Musroom (Button)", liters: "", ml: "" },
+    { id: 12, tamilName: "பிரட்", englishName: "Bread", count: "" },
+    { id: 13, tamilName: "காளான் (பட்டன்)", englishName: "Mushroom (Button)", kg: "", grams: "" },
+    { id: 14, tamilName: "பேபி கார்ன்", englishName: "Baby Corn", kg: "", grams: "" },
   ])
 
   const [flourItems, setFlourItems] = useState([
@@ -62,7 +63,7 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
   useImperativeHandle(ref, () => ({
     getFormData: () => {
       return {
-        oils: oilItems.filter((item) => item.liters || item.ml || item.kg),
+        oils: oilItems.filter((item) => item.liters || item.ml || item.kg || item.count || item.grams),
         flours: flourItems.filter((item) => item.kg),
       }
     },
@@ -88,12 +89,12 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
                     <span className="english-text"> / Items</span>
                   </th>
                   <th className="measurement-header">
-                    <span className="tamil-text">லிட்டர்</span>
-                    <span className="english-text"> / Liters</span>
+                    <span className="tamil-text">அளவு</span>
+                    <span className="english-text"> / Measurement</span>
                   </th>
                   <th className="measurement-header">
-                    <span className="tamil-text">மில்லி</span>
-                    <span className="english-text"> / ml</span>
+                    <span className="tamil-text">அளவு</span>
+                    <span className="english-text"> / Measurement</span>
                   </th>
                 </tr>
               </thead>
@@ -117,6 +118,40 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
                           placeholder="Kg"
                         />
                       </td>
+                    ) : item.id === 12 ? (
+                      <td colSpan="2">
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          min="0"
+                          value={item.count}
+                          onChange={(e) => handleOilInputChange(item.id, "count", e.target.value)}
+                          placeholder="Count"
+                        />
+                      </td>
+                    ) : item.id === 13 || item.id === 14 ? (
+                      <>
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.kg}
+                            onChange={(e) => handleOilInputChange(item.id, "kg", e.target.value)}
+                            placeholder="Kg"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className="form-control form-control-sm"
+                            min="0"
+                            value={item.grams}
+                            onChange={(e) => handleOilInputChange(item.id, "grams", e.target.value)}
+                            placeholder="Grams"
+                          />
+                        </td>
+                      </>
                     ) : (
                       <>
                         <td>
