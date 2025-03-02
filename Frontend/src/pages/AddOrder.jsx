@@ -16,6 +16,7 @@ import FruitsForm from "../components/FruitsForm"
 import VegetablesForm from "../components/VegetablesForm"
 import UtensilsForm from "../components/UtensilsForm"
 import IdliBatterForm from "../components/IdliBatterForm"
+import SmallGrainsForm from "../components/SmallGrainsForm"
 
 const AddOrder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -38,6 +39,7 @@ const AddOrder = () => {
   const vegetablesRef = useRef()
   const utensilsRef = useRef()
   const idliBatterRef = useRef()
+  const smallGrainsRef = useRef()
 
   useEffect(() => {
     if (orderId) {
@@ -83,6 +85,7 @@ const AddOrder = () => {
         vegetables: vegetablesRef.current?.getFormData() || [],
         utensils: utensilsRef.current?.getFormData() || [],
         idliBatter: idliBatterRef.current?.getFormData() || [],
+        smallGrains: smallGrainsRef.current?.getFormData() || [],
       }
 
       let docRef
@@ -136,6 +139,7 @@ const AddOrder = () => {
       <SauceAndSuppliesForm ref={sauceAndSuppliesRef} initialData={existingOrder?.sauceAndSupplies} />
       <FruitsForm ref={fruitsRef} initialData={existingOrder?.fruits} />
       <VegetablesForm ref={vegetablesRef} initialData={existingOrder?.vegetables} />
+      <SmallGrainsForm ref={smallGrainsRef} initialData={existingOrder?.smallGrains} />
       <UtensilsForm ref={utensilsRef} initialData={existingOrder?.utensils} />
       <IdliBatterForm ref={idliBatterRef} initialData={existingOrder?.idliBatter} />
 

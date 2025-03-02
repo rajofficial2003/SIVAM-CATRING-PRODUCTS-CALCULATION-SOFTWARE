@@ -268,6 +268,7 @@ const SharedOrderDetails = () => {
       addItemsTable(order.vegetables, "Vegetables", ["Measurement"])
       addItemsTable(order.utensils, "Utensils", ["Count"])
       addItemsTable(order.idliBatter, "Idli Batter", ["Count"])
+      addItemsTable(order.smallGrains, "Small Grains", ["Kg"])
 
       doc.save(`Order_${order.id}.pdf`)
     } catch (error) {
@@ -392,6 +393,9 @@ const SharedOrderDetails = () => {
 
       {/* Vegetables */}
       {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}
+
+      {/* Small Grains */}
+      {renderItemsTable(order.smallGrains, "Small Grains", ["Kg"])}
 
       {/* Utensils */}
       {renderItemsTable(order.utensils, "Utensils", ["Count"])}
