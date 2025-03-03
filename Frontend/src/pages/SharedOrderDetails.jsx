@@ -8,9 +8,6 @@ import { FaDownload } from "react-icons/fa"
 import jsPDF from "jspdf"
 import "jspdf-autotable"
 
-// Import the Noto Sans Tamil font
-import notoSansTamilUrl from "../fonts/NotoSansTamil-Regular.ttf"
-
 const SharedOrderDetails = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
@@ -143,27 +140,25 @@ const SharedOrderDetails = () => {
   const generatePDF = async () => {
     setGenerating(true)
     try {
-      const doc = new jsPDF()
+      // Create new jsPDF instance with proper configuration
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
 
-      // Load and add the Noto Sans Tamil font to the PDF
-      const fontResponse = await fetch(notoSansTamilUrl)
-      const fontArrayBuffer = await fontResponse.arrayBuffer()
-      doc.addFileToVFS("NotoSansTamil-Regular.ttf", fontArrayBuffer)
-      doc.addFont("NotoSansTamil-Regular.ttf", "NotoSansTamil", "normal")
-
-      // Set the default font to Noto Sans Tamil
-      doc.setFont("NotoSansTamil")
-
+      // Use standard font instead of trying to load Tamil font
+      doc.setFont("helvetica", "normal")
       doc.setFontSize(18)
       doc.text("Order Details", 14, 22)
 
       doc.setFontSize(12)
       doc.text(`Order ID: ${order.id}`, 14, 32)
-      doc.text(`Customer Name: ${order.customerDetails.name}`, 14, 40)
-      doc.text(`Order Date: ${order.customerDetails.orderDate}`, 14, 48)
-      doc.text(`Function Type: ${order.customerDetails.functionType}`, 14, 56)
-      doc.text(`Mobile Number: ${order.customerDetails.mobileNumber}`, 14, 64)
-      doc.text(`Address: ${order.customerDetails.address}`, 14, 72)
+      doc.text(`Customer Name: ${order.customerDetails.name || ""}`, 14, 40)
+      doc.text(`Order Date: ${order.customerDetails.orderDate || ""}`, 14, 48)
+      doc.text(`Function Type: ${order.customerDetails.functionType || ""}`, 14, 56)
+      doc.text(`Mobile Number: ${order.customerDetails.mobileNumber || ""}`, 14, 64)
+      doc.text(`Address: ${order.customerDetails.address || ""}`, 14, 72)
 
       let yPos = 90
 
@@ -173,90 +168,110 @@ const SharedOrderDetails = () => {
           doc.text(title, 14, yPos)
           yPos += 10
 
-          const tableData = items.map((item) => [
-            `${item.tamilName} / ${item.englishName}`,
-            ...columns.map((col) => {
-              const key = col.toLowerCase().replace(/ /g, "")
-              let value = "-"
-              if (title === "Oil Types") {
-                if (key === "kg") {
-                  value = item.kg ? `${item.kg} (Kg)` : "-"
-                } else if (key === "liters") {
-                  value = item.liters ? `${item.liters} (Liters)` : "-"
-                } else if (key === "ml") {
-                  value = item.ml ? `${item.ml} (ml)` : "-"
-                } else if (key === "count") {
-                  value = item.count ? `${item.count} (Count)` : "-"
-                } else if (key === "grams") {
-                  value = item.grams ? `${item.grams} (Grams)` : "-"
-                }
-              } else if (title === "Vegetables") {
-                if (item.id === 40 || item.id === 44 || item.id === 45) {
-                  value = `${item.count} (Count)`
-                } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
-                  value = `${item.bundle} (கட்டு)`
-                } else if ([14, 15, 34, 35, 36].includes(item.id)) {
-                  value = `${item.quantity} (Quantity)`
-                } else {
+          const tableData = items.map((item) => {
+            // Use only English name to avoid Tamil character issues
+            const itemName = `${item.englishName || ""}`
+
+            return [
+              itemName,
+              ...columns.map((col) => {
+                const key = col.toLowerCase().replace(/ /g, "")
+                let value = "-"
+                if (title === "Oil Types") {
+                  if (key === "kg") {
+                    value = item.kg ? `${item.kg} (Kg)` : "-"
+                  } else if (key === "liters") {
+                    value = item.liters ? `${item.liters} (Liters)` : "-"
+                  } else if (key === "ml") {
+                    value = item.ml ? `${item.ml} (ml)` : "-"
+                  } else if (key === "count") {
+                    value = item.count ? `${item.count} (Count)` : "-"
+                  } else if (key === "grams") {
+                    value = item.grams ? `${item.grams} (Grams)` : "-"
+                  }
+                } else if (title === "Vegetables") {
+                  if (item.id === 40 || item.id === 44 || item.id === 45) {
+                    value = `${item.count} (Count)`
+                  } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
+                    value = `${item.bundle} (Count)`
+                  } else if ([14, 15, 34, 35, 36].includes(item.id)) {
+                    value = `${item.quantity} (Quantity)`
+                  } else {
+                    value = `${item.kg} (Kg)`
+                  }
+                } else if (title === "Color Powder Types") {
+                  value = `${item.pockets} (Pockets)`
+                } else if (title === "Flour Types") {
                   value = `${item.kg} (Kg)`
-                }
-              } else if (title === "Color Powder Types") {
-                value = `${item.pockets} (Pockets)`
-              } else if (title === "Flour Types") {
-                value = `${item.kg} (Kg)`
-              } else if (title === "General Items") {
-                if (item.id === 50) {
-                  value = `${item.bundle} (கட்டு)`
-                } else if (item.id === 59) {
-                  value = `${item.count} (Count)`
-                } else if (key === "kg/bundle(கட்டு)") {
-                  value = item.kg ? `${item.kg} (Kg)` : "-"
-                } else if (key === "grams") {
-                  value = item.grams ? `${item.grams} (Grams)` : "-"
-                }
-              } else if (title === "Pooja Items") {
-                value = `${item.rs} (Rs)`
-              } else if (title === "Sauce and Supplies") {
-                if (item.quantity) {
-                  value = `${item.quantity} (Quantity)`
-                } else if (item.liters) {
-                  value = `${item.liters} (Liters)`
-                } else if (item.meter) {
-                  value = `${item.meter} (Meter)`
+                } else if (title === "General Items") {
+                  if (item.id === 50) {
+                    value = `${item.bundle} (Count)`
+                  } else if (item.id === 59) {
+                    value = `${item.count} (Count)`
+                  } else if (key === "kg/bundle(கட்டு)") {
+                    value = item.kg ? `${item.kg} (Kg)` : "-"
+                  } else if (key === "grams") {
+                    value = item.grams ? `${item.grams} (Grams)` : "-"
+                  }
+                } else if (title === "Pooja Items") {
+                  value = `${item.rs} (Rs)`
+                } else if (title === "Sauce and Supplies") {
+                  if (item.quantity) {
+                    value = `${item.quantity} (Quantity)`
+                  } else if (item.liters) {
+                    value = `${item.liters} (Liters)`
+                  } else if (item.meter) {
+                    value = `${item.meter} (Meter)`
+                  } else {
+                    value = "-"
+                  }
+                } else if (title === "Fruits") {
+                  if (item.id === 2 || item.id === 6) {
+                    // Jackfruit and Pineapple
+                    value = `${item.quantity} (Quantity)`
+                  } else {
+                    value = `${item.kg} (Kg)`
+                  }
                 } else {
-                  value = "-"
+                  value = item[key] || "-"
                 }
-              } else if (title === "Fruits") {
-                if (item.id === 2 || item.id === 6) {
-                  // Jackfruit and Pineapple
-                  value = `${item.quantity} (Quantity)`
-                } else {
-                  value = `${item.kg} (Kg)`
-                }
-              } else {
-                value = item[key] || "-"
-              }
-              return value
-            }),
-          ])
+                return value
+              }),
+            ]
+          })
 
           doc.autoTable({
             head: [["Item", ...columns]],
             body: tableData,
             startY: yPos,
             styles: {
-              font: "NotoSansTamil",
               fontSize: 10,
             },
             columnStyles: { 0: { cellWidth: 80 } },
+            didDrawPage: (data) => {
+              // Footer
+              doc.setFontSize(8)
+              doc.text(
+                `Order ID: ${order.id} - Page ${doc.internal.getNumberOfPages()}`,
+                data.settings.margin.left,
+                doc.internal.pageSize.height - 10,
+              )
+            },
           })
 
           yPos = doc.lastAutoTable.finalY + 15
+
+          // Check if we need a new page
+          if (yPos > 250) {
+            doc.addPage()
+            yPos = 20
+          }
         }
       }
 
+      // Add all the tables with simplified item names
       addItemsTable(order.poojaItems, "Pooja Items", ["Rs"])
-      addItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])
+      addItemsTable(order.generalItems, "General Items", ["Kg/Bundle", "Grams"])
       addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
       addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
       addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])
