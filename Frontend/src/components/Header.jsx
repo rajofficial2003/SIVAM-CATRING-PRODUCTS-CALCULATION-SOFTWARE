@@ -15,7 +15,6 @@ const Header = () => {
 
   const businessNameStyle = {
     color: "#d33131",
-    fontSize: "2rem",
     fontWeight: "bold",
     margin: "0",
   }

@@ -8,6 +8,7 @@ import { FaEdit, FaArrowLeft, FaDownload, FaShare, FaWhatsapp } from "react-icon
 import jsPDF from "jspdf"
 import "jspdf-autotable"
 import { Modal, Button, Dropdown } from "react-bootstrap"
+import html2canvas from "html2canvas"
 
 const OrderDetails = () => {
   const { orderId } = useParams()
@@ -43,7 +44,7 @@ const OrderDetails = () => {
     if (!items || items.length === 0) return null
 
     return (
-      <div className="card shadow-sm mb-5">
+      <div className="card shadow-sm mb-5 pdf-table">
         <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
           <h3 className="card-title mb-0">{title}</h3>
         </div>
@@ -121,7 +122,6 @@ const OrderDetails = () => {
                         }
                       } else if (title === "Fruits") {
                         if (item.id === 2 || item.id === 6) {
-                          // Jackfruit and Pineapple
                           value = `${item.quantity} (Quantity)`
                         } else {
                           value = `${item.kg} (Kg)`
@@ -144,152 +144,67 @@ const OrderDetails = () => {
   const generatePDF = async () => {
     setGenerating(true)
     try {
-      // Create new jsPDF instance
-      const doc = new jsPDF({
+      const content = document.getElementById("pdf-content")
+      const pdf = new jsPDF({
         orientation: "portrait",
-        unit: "mm",
+        unit: "pt",
         format: "a4",
       })
 
-      // Set up the document with standard font - don't try to load Tamil font immediately
-      doc.setFont("helvetica", "normal")
-      doc.setFontSize(18)
-      doc.text("Order Details", 14, 22)
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = pdf.internal.pageSize.getHeight()
+      const margins = 40
+      let yOffset = margins
 
-      doc.setFontSize(12)
-      doc.text(`Order ID: ${order.id}`, 14, 32)
-      doc.text(`Customer Name: ${order.customerDetails.name || ""}`, 14, 40)
-      doc.text(`Order Date: ${order.customerDetails.orderDate || ""}`, 14, 48)
-      doc.text(`Function Type: ${order.customerDetails.functionType || ""}`, 14, 56)
-      doc.text(`Mobile Number: ${order.customerDetails.mobileNumber || ""}`, 14, 64)
-      doc.text(`Address: ${order.customerDetails.address || ""}`, 14, 72)
-
-      let yPos = 90
-
-      const addItemsTable = (items, title, columns) => {
-        if (items && items.length > 0) {
-          doc.setFontSize(14)
-          doc.text(title, 14, yPos)
-          yPos += 10
-
-          const tableData = items.map((item) => {
-            // Create a clean item name without Tamil characters for PDF
-            const itemName = `${item.englishName || ""}`
-
-            return [
-              itemName,
-              ...columns.map((col) => {
-                const key = col.toLowerCase().replace(/ /g, "")
-                let value = "-"
-                if (title === "Oil Types") {
-                  if (key === "kg") {
-                    value = item.kg ? `${item.kg} (Kg)` : "-"
-                  } else if (key === "liters") {
-                    value = item.liters ? `${item.liters} (Liters)` : "-"
-                  } else if (key === "ml") {
-                    value = item.ml ? `${item.ml} (ml)` : "-"
-                  } else if (key === "count") {
-                    value = item.count ? `${item.count} (Count)` : "-"
-                  } else if (key === "grams") {
-                    value = item.grams ? `${item.grams} (Grams)` : "-"
-                  }
-                } else if (title === "Vegetables") {
-                  if (item.id === 40 || item.id === 44 || item.id === 45) {
-                    value = `${item.count} (Count)`
-                  } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
-                    value = `${item.bundle} (Count)`
-                  } else if ([14, 15, 34, 35, 36].includes(item.id)) {
-                    value = `${item.quantity} (Quantity)`
-                  } else {
-                    value = `${item.kg} (Kg)`
-                  }
-                } else if (title === "Color Powder Types") {
-                  value = `${item.pockets} (Pockets)`
-                } else if (title === "Flour Types") {
-                  value = `${item.kg} (Kg)`
-                } else if (title === "General Items") {
-                  if (item.id === 50) {
-                    value = `${item.bundle} (Count)`
-                  } else if (item.id === 59) {
-                    value = `${item.count} (Count)`
-                  } else if (key === "kg/bundle(கட்டு)") {
-                    value = item.kg ? `${item.kg} (Kg)` : "-"
-                  } else if (key === "grams") {
-                    value = item.grams ? `${item.grams} (Grams)` : "-"
-                  }
-                } else if (title === "Pooja Items") {
-                  value = `${item.rs} (Rs)`
-                } else if (title === "Sauce and Supplies") {
-                  if (item.quantity) {
-                    value = `${item.quantity} (Quantity)`
-                  } else if (item.liters) {
-                    value = `${item.liters} (Liters)`
-                  } else if (item.meter) {
-                    value = `${item.meter} (Meter)`
-                  } else {
-                    value = "-"
-                  }
-                } else if (title === "Fruits") {
-                  if (item.id === 2 || item.id === 6) {
-                    // Jackfruit and Pineapple
-                    value = `${item.quantity} (Quantity)`
-                  } else {
-                    value = `${item.kg} (Kg)`
-                  }
-                } else {
-                  value = item[key] || "-"
-                }
-                return value
-              }),
-            ]
-          })
-
-          doc.autoTable({
-            head: [["Item", ...columns]],
-            body: tableData,
-            startY: yPos,
-            styles: {
-              fontSize: 10,
-            },
-            columnStyles: { 0: { cellWidth: 80 } },
-            didDrawPage: (data) => {
-              // Footer
-              doc.setFontSize(8)
-              doc.text(
-                `Order ID: ${order.id} - Page ${doc.internal.getNumberOfPages()}`,
-                data.settings.margin.left,
-                doc.internal.pageSize.height - 10,
-              )
-            },
-          })
-
-          yPos = doc.lastAutoTable.finalY + 15
-
-          // Check if we need a new page
-          if (yPos > 250) {
-            doc.addPage()
-            yPos = 20
-          }
-        }
+      // Function to add a new page
+      const addNewPage = () => {
+        pdf.addPage()
+        yOffset = margins
       }
 
-      // Add all the tables with simplified item names
-      addItemsTable(order.poojaItems, "Pooja Items", ["Rs"])
-      addItemsTable(order.generalItems, "General Items", ["Kg/Bundle", "Grams"])
-      addItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])
-      addItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])
-      addItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])
-      addItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])
-      addItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])
-      addItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])
-      addItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])
-      addItemsTable(order.fruits, "Fruits", ["Measurement"])
-      addItemsTable(order.vegetables, "Vegetables", ["Measurement"])
-      addItemsTable(order.utensils, "Utensils", ["Count"])
-      addItemsTable(order.idliBatter, "Idli Batter", ["Count"])
-      addItemsTable(order.smallGrains, "Small Grains", ["Kg"])
+      // Function to add content to PDF
+      const addContentToPDF = async (element) => {
+        const canvas = await html2canvas(element, {
+          scale: 1.5,
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+        })
+        const imgData = canvas.toDataURL("image/jpeg", 0.7)
+        const imgWidth = pdfWidth - 2 * margins
+        const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-      doc.save(`Order_${order.id}.pdf`)
+        if (yOffset + imgHeight > pdfHeight - margins) {
+          addNewPage()
+        }
+
+        pdf.addImage(imgData, "JPEG", margins, yOffset, imgWidth, imgHeight, "", "FAST")
+        yOffset += imgHeight + 10 // Reduced space between elements
+      }
+
+      // Add customer details
+      await addContentToPDF(content.querySelector(".card"))
+
+      // Add each table
+      const tables = content.querySelectorAll(".pdf-table")
+      for (const table of tables) {
+        await addContentToPDF(table)
+      }
+
+      // Add page numbers
+      const pageCount = pdf.internal.getNumberOfPages()
+      for (let i = 1; i <= pageCount; i++) {
+        pdf.setPage(i)
+        pdf.setFontSize(10)
+        pdf.setTextColor(150)
+        pdf.text(
+          `Page ${i} of ${pageCount}`,
+          pdf.internal.pageSize.getWidth() - 100,
+          pdf.internal.pageSize.getHeight() - 30,
+        )
+      }
+
+      pdf.save(`Order_${order.id}.pdf`)
     } catch (error) {
       console.error("Error generating PDF:", error)
       alert("An error occurred while generating the PDF. Please try again.")
@@ -403,84 +318,86 @@ const OrderDetails = () => {
         </div>
       </div>
 
-      {/* Customer Details */}
-      <div className="card shadow-sm mb-5">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
-          <h2 className="card-title h5 mb-0">Customer Details</h2>
-        </div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-6 col-lg-3">
-              <div className="d-flex flex-column">
-                <strong>Name:</strong>
-                <span>{order.customerDetails?.name || "-"}</span>
+      <div id="pdf-content">
+        {/* Customer Details */}
+        <div className="card shadow-sm mb-5">
+          <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+            <h2 className="card-title h5 mb-0">Customer Details</h2>
+          </div>
+          <div className="card-body">
+            <div className="row g-3">
+              <div className="col-md-6 col-lg-3">
+                <div className="d-flex flex-column">
+                  <strong>Name:</strong>
+                  <span>{order.customerDetails?.name || "-"}</span>
+                </div>
               </div>
-            </div>
-            <div className="col-md-6 col-lg-3">
-              <div className="d-flex flex-column">
-                <strong>Order Date:</strong>
-                <span>{order.customerDetails?.orderDate || "-"}</span>
+              <div className="col-md-6 col-lg-3">
+                <div className="d-flex flex-column">
+                  <strong>Order Date:</strong>
+                  <span>{order.customerDetails?.orderDate || "-"}</span>
+                </div>
               </div>
-            </div>
-            <div className="col-md-6 col-lg-3">
-              <div className="d-flex flex-column">
-                <strong>Function Type:</strong>
-                <span>{order.customerDetails?.functionType || "-"}</span>
+              <div className="col-md-6 col-lg-3">
+                <div className="d-flex flex-column">
+                  <strong>Function Type:</strong>
+                  <span>{order.customerDetails?.functionType || "-"}</span>
+                </div>
               </div>
-            </div>
-            <div className="col-md-6 col-lg-3">
-              <div className="d-flex flex-column">
-                <strong>Mobile Number:</strong>
-                <span>{order.customerDetails?.mobileNumber || "-"}</span>
+              <div className="col-md-6 col-lg-3">
+                <div className="d-flex flex-column">
+                  <strong>Mobile Number:</strong>
+                  <span>{order.customerDetails?.mobileNumber || "-"}</span>
+                </div>
               </div>
-            </div>
-            <div className="col-12">
-              <div className="d-flex flex-column">
-                <strong>Address:</strong>
-                <span>{order.customerDetails?.address || "-"}</span>
+              <div className="col-12">
+                <div className="d-flex flex-column">
+                  <strong>Address:</strong>
+                  <span>{order.customerDetails?.address || "-"}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Pooja Items */}
+        {renderItemsTable(order.poojaItems, "Pooja Items", ["Rs"])}
+
+        {/* General Items */}
+        {renderItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])}
+
+        {/* Rice and Pulses */}
+        {renderItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])}
+
+        {/* Essence and Color */}
+        {renderItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])}
+        {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])}
+
+        {/* Oils and Flours */}
+        {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])}
+        {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])}
+
+        {/* Masala Items */}
+        {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}
+
+        {/* Sauce and Supplies */}
+        {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])}
+
+        {/* Fruits */}
+        {renderItemsTable(order.fruits, "Fruits", ["Measurement"])}
+
+        {/* Vegetables */}
+        {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}
+
+        {/* Small Grains */}
+        {renderItemsTable(order.smallGrains, "Small Grains", ["Kg"])}
+
+        {/* Utensils */}
+        {renderItemsTable(order.utensils, "Utensils", ["Count"])}
+
+        {/* Idli Batter */}
+        {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
       </div>
-
-      {/* Pooja Items */}
-      {renderItemsTable(order.poojaItems, "Pooja Items", ["Rs"])}
-
-      {/* General Items */}
-      {renderItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])}
-
-      {/* Rice and Pulses */}
-      {renderItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])}
-
-      {/* Essence and Color */}
-      {renderItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])}
-      {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])}
-
-      {/* Oils and Flours */}
-      {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])}
-      {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])}
-
-      {/* Masala Items */}
-      {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}
-
-      {/* Sauce and Supplies */}
-      {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])}
-
-      {/* Fruits */}
-      {renderItemsTable(order.fruits, "Fruits", ["Measurement"])}
-
-      {/* Vegetables */}
-      {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}
-
-      {/* Small Grains */}
-      {renderItemsTable(order.smallGrains, "Small Grains", ["Kg"])}
-
-      {/* Utensils */}
-      {renderItemsTable(order.utensils, "Utensils", ["Count"])}
-
-      {/* Idli Batter */}
-      {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
 
       {/* Share Modal */}
       <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
