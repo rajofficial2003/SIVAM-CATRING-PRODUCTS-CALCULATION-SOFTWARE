@@ -18,7 +18,8 @@ import UtensilsForm from "../components/UtensilsForm"
 import IdliBatterForm from "../components/IdliBatterForm"
 import SmallGrainsForm from "../components/SmallGrainsForm"
 import NavBar from "../components/Navbar"
-
+import Header from "../components/Header"
+import Footer from "../components/Footer"
 
 const AddOrder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -126,6 +127,7 @@ const AddOrder = () => {
 
   return (
     <div className="container py-4">
+      <Header />
       <NavBar />
       <h1 className="mb-4 text-center" style={{ color: "black" }}>
         {orderId ? "Edit Order" : "Add New Order"}
@@ -169,6 +171,7 @@ const AddOrder = () => {
           {isSubmitting ? "Submitting..." : orderId ? "Update Order" : "Submit Order"}
         </button>
       </div>
+      <Footer />
     </div>
   )
 }
