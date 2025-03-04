@@ -41,27 +41,29 @@ const SharedOrderDetails = () => {
 
     return (
       <div className="card shadow-sm mb-5 pdf-table">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
           <h3 className="card-title mb-0">{title}</h3>
         </div>
         <div className="card-body p-3">
           <div className="table-responsive">
-            <table className="table table-bordered table-hover mb-0">
+            <table className="table table-bordered table-hover mb-0 text-center">
               <thead className="sticky-top" style={{ backgroundColor: "#f8f9fa" }}>
                 <tr>
-                  <th>
+                  <th className="align-middle text-start">
                     <span className="tamil-text">பொருட்கள்</span>
                     <span className="english-text"> / Items</span>
                   </th>
                   {columns.map((col, index) => (
-                    <th key={index}>{col}</th>
+                    <th key={index} className="align-middle">
+                      {col}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {items.map((item, index) => (
                   <tr key={index}>
-                    <td>
+                    <td className="text-start align-middle">
                       <span className="tamil-text">{item.tamilName || "-"}</span>
                       <span className="english-text"> / {item.englishName || "-"}</span>
                     </td>
@@ -125,7 +127,11 @@ const SharedOrderDetails = () => {
                       } else {
                         value = item[key] || "-"
                       }
-                      return <td key={colIndex}>{value}</td>
+                      return (
+                        <td key={colIndex} className="align-middle">
+                          {value}
+                        </td>
+                      )
                     })}
                   </tr>
                 ))}
@@ -152,39 +158,53 @@ const SharedOrderDetails = () => {
       const margins = 40
       let yOffset = margins
 
-      // Function to add a new page
-      const addNewPage = () => {
-        pdf.addPage()
-        yOffset = margins
-      }
+      // Add customer details first
+      const customerCard = content.querySelector(".card:not(.pdf-table)")
+      yOffset = await addElementToPDF(customerCard, pdf, pdfWidth, pdfHeight, margins, yOffset)
+      yOffset += 10 // Small space after customer details
 
-      // Function to add content to PDF
-      const addContentToPDF = async (element) => {
-        const canvas = await html2canvas(element, {
-          scale: 1.5,
-          useCORS: true,
-          logging: false,
-          allowTaint: true,
-        })
-        const imgData = canvas.toDataURL("image/jpeg", 0.7)
-        const imgWidth = pdfWidth - 2 * margins
-        const imgHeight = (canvas.height * imgWidth) / canvas.width
+      // Get all tables
+      const tables = content.querySelectorAll(".pdf-table")
 
-        if (yOffset + imgHeight > pdfHeight - margins) {
-          addNewPage()
+      // Process each table
+      for (let i = 0; i < tables.length; i++) {
+        const table = tables[i]
+
+        // Get the table header (card-header)
+        const header = table.querySelector(".card-header")
+        const tableContent = table.querySelector(".table-responsive")
+
+        // Add the table header
+        yOffset = await addElementToPDF(header, pdf, pdfWidth, pdfHeight, margins, yOffset)
+        yOffset += 5 // Small space after header
+
+        // Get the rows of the table
+        const rows = tableContent.querySelectorAll("tbody tr")
+        const thead = tableContent.querySelector("thead")
+
+        // Add the column headers
+        yOffset = await addElementToPDF(thead, pdf, pdfWidth, pdfHeight, margins, yOffset)
+        yOffset += 5 // Small space after column headers
+
+        // Process each row
+        for (let j = 0; j < rows.length; j++) {
+          // Check if we need a new page
+          if (yOffset > pdfHeight - margins) {
+            pdf.addPage()
+            yOffset = margins
+            // Add the table header and column headers again on the new page
+            yOffset = await addElementToPDF(header, pdf, pdfWidth, pdfHeight, margins, yOffset)
+            yOffset += 5
+            yOffset = await addElementToPDF(thead, pdf, pdfWidth, pdfHeight, margins, yOffset)
+            yOffset += 5
+          }
+
+          // Add the row
+          yOffset = await addElementToPDF(rows[j], pdf, pdfWidth, pdfHeight, margins, yOffset)
         }
 
-        pdf.addImage(imgData, "JPEG", margins, yOffset, imgWidth, imgHeight, "", "FAST")
-        yOffset += imgHeight + 10 // Reduced space between elements
-      }
-
-      // Add customer details
-      await addContentToPDF(content.querySelector(".card"))
-
-      // Add each table
-      const tables = content.querySelectorAll(".pdf-table")
-      for (const table of tables) {
-        await addContentToPDF(table)
+        // Add a small space after the table
+        yOffset += 10
       }
 
       // Add page numbers
@@ -195,8 +215,9 @@ const SharedOrderDetails = () => {
         pdf.setTextColor(150)
         pdf.text(
           `Page ${i} of ${pageCount}`,
-          pdf.internal.pageSize.getWidth() - 100,
+          pdf.internal.pageSize.getWidth() / 2,
           pdf.internal.pageSize.getHeight() - 30,
+          { align: "center" },
         )
       }
 
@@ -206,6 +227,36 @@ const SharedOrderDetails = () => {
       alert("An error occurred while generating the PDF. Please try again.")
     } finally {
       setGenerating(false)
+    }
+  }
+
+  // Helper function to add an element to the PDF
+  const addElementToPDF = async (element, pdf, pdfWidth, pdfHeight, margins, yOffset) => {
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+        allowTaint: true,
+      })
+      const imgData = canvas.toDataURL("image/jpeg", 0.7)
+      const imgWidth = pdfWidth - 2 * margins
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+      // Check if the element fits on the current page
+      if (yOffset + imgHeight > pdfHeight - margins) {
+        pdf.addPage()
+        yOffset = margins
+      }
+
+      // Center the image horizontally
+      const xOffset = (pdfWidth - imgWidth) / 2
+      pdf.addImage(imgData, "JPEG", xOffset, yOffset, imgWidth, imgHeight, "", "FAST")
+
+      return yOffset + imgHeight
+    } catch (error) {
+      console.error("Error adding element to PDF:", error)
+      return yOffset
     }
   }
 
@@ -257,7 +308,7 @@ const SharedOrderDetails = () => {
       <div id="pdf-content">
         {/* Customer Details */}
         <div className="card shadow-sm mb-5">
-          <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+          <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
             <h2 className="card-title h5 mb-0">Customer Details</h2>
           </div>
           <div className="card-body">
