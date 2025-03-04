@@ -7,7 +7,7 @@ import { db } from "../firebase/config"
 import { FaEdit, FaArrowLeft, FaDownload, FaShare, FaWhatsapp } from "react-icons/fa"
 import jsPDF from "jspdf"
 import "jspdf-autotable"
-import { Modal, Button, Dropdown } from "react-bootstrap"
+import { Modal, Button, Dropdown, ProgressBar } from "react-bootstrap"
 import html2canvas from "html2canvas"
 
 const OrderDetails = () => {
@@ -17,6 +17,8 @@ const OrderDetails = () => {
   const [generating, setGenerating] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareLink, setShareLink] = useState("")
+  const [showPdfModal, setShowPdfModal] = useState(false)
+  const [pdfProgress, setPdfProgress] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -149,6 +151,8 @@ const OrderDetails = () => {
 
   const generatePDF = async () => {
     setGenerating(true)
+    setShowPdfModal(true)
+    setPdfProgress(0)
     try {
       const content = document.getElementById("pdf-content")
       const pdf = new jsPDF({
@@ -166,9 +170,12 @@ const OrderDetails = () => {
       const customerCard = content.querySelector(".card:not(.pdf-table)")
       yOffset = await addElementToPDF(customerCard, pdf, pdfWidth, pdfHeight, margins, yOffset)
       yOffset += 10 // Small space after customer details
+      setPdfProgress(10)
 
       // Get all tables
       const tables = content.querySelectorAll(".pdf-table")
+      const totalTables = tables.length
+      const progressPerTable = 80 / totalTables
 
       // Process each table
       for (let i = 0; i < tables.length; i++) {
@@ -209,6 +216,9 @@ const OrderDetails = () => {
 
         // Add a small space after the table
         yOffset += 10
+
+        // Update progress
+        setPdfProgress((prevProgress) => prevProgress + progressPerTable)
       }
 
       // Add page numbers
@@ -225,7 +235,11 @@ const OrderDetails = () => {
         )
       }
 
-      pdf.save(`Order_${order.id}.pdf`)
+      setPdfProgress(100)
+      setTimeout(() => {
+        pdf.save(`Order_${order.id}.pdf`)
+        setShowPdfModal(false)
+      }, 1000)
     } catch (error) {
       console.error("Error generating PDF:", error)
       alert("An error occurred while generating the PDF. Please try again.")
@@ -341,16 +355,7 @@ const OrderDetails = () => {
             style={{ backgroundColor: "#d33131", color: "white" }}
             disabled={generating}
           >
-            {generating ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Generating...
-              </>
-            ) : (
-              <>
-                <FaDownload className="me-2" /> Download PDF
-              </>
-            )}
+            <FaDownload className="me-2" /> Download PDF
           </button>
           <Dropdown>
             <Dropdown.Toggle variant="danger" id="dropdown-share">
@@ -469,6 +474,17 @@ const OrderDetails = () => {
             Close
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* PDF Generation Modal */}
+      <Modal show={showPdfModal} centered backdrop="static" keyboard={false}>
+        <Modal.Header style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Title>Generating PDF</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please wait while we generate your PDF...</p>
+          <ProgressBar animated now={pdfProgress} label={`${Math.round(pdfProgress)}%`} />
+        </Modal.Body>
       </Modal>
     </div>
   )

@@ -8,12 +8,15 @@ import { FaDownload } from "react-icons/fa"
 import jsPDF from "jspdf"
 import "jspdf-autotable"
 import html2canvas from "html2canvas"
+import { Modal, ProgressBar } from "react-bootstrap"
 
 const SharedOrderDetails = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [showPdfModal, setShowPdfModal] = useState(false)
+  const [pdfProgress, setPdfProgress] = useState(0)
 
   useEffect(() => {
     fetchOrderDetails()
@@ -145,6 +148,8 @@ const SharedOrderDetails = () => {
 
   const generatePDF = async () => {
     setGenerating(true)
+    setShowPdfModal(true)
+    setPdfProgress(0)
     try {
       const content = document.getElementById("pdf-content")
       const pdf = new jsPDF({
@@ -162,9 +167,12 @@ const SharedOrderDetails = () => {
       const customerCard = content.querySelector(".card:not(.pdf-table)")
       yOffset = await addElementToPDF(customerCard, pdf, pdfWidth, pdfHeight, margins, yOffset)
       yOffset += 10 // Small space after customer details
+      setPdfProgress(10)
 
       // Get all tables
       const tables = content.querySelectorAll(".pdf-table")
+      const totalTables = tables.length
+      const progressPerTable = 80 / totalTables
 
       // Process each table
       for (let i = 0; i < tables.length; i++) {
@@ -205,6 +213,9 @@ const SharedOrderDetails = () => {
 
         // Add a small space after the table
         yOffset += 10
+
+        // Update progress
+        setPdfProgress((prevProgress) => prevProgress + progressPerTable)
       }
 
       // Add page numbers
@@ -221,7 +232,11 @@ const SharedOrderDetails = () => {
         )
       }
 
-      pdf.save(`Order_${order.id}.pdf`)
+      setPdfProgress(100)
+      setTimeout(() => {
+        pdf.save(`Order_${order.id}.pdf`)
+        setShowPdfModal(false)
+      }, 1000)
     } catch (error) {
       console.error("Error generating PDF:", error)
       alert("An error occurred while generating the PDF. Please try again.")
@@ -291,16 +306,7 @@ const SharedOrderDetails = () => {
             style={{ backgroundColor: "#d33131", color: "white" }}
             disabled={generating}
           >
-            {generating ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Generating...
-              </>
-            ) : (
-              <>
-                <FaDownload className="me-2" /> Download PDF
-              </>
-            )}
+            <FaDownload className="me-2" /> Download PDF
           </button>
         </div>
       </div>
@@ -385,6 +391,17 @@ const SharedOrderDetails = () => {
         {/* Idli Batter */}
         {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
       </div>
+
+      {/* PDF Generation Modal */}
+      <Modal show={showPdfModal} centered backdrop="static" keyboard={false}>
+        <Modal.Header style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Title>Generating PDF</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Please wait while we generate your PDF...</p>
+          <ProgressBar animated now={pdfProgress} label={`${Math.round(pdfProgress)}%`} />
+        </Modal.Body>
+      </Modal>
     </div>
   )
 }
