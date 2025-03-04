@@ -9,6 +9,9 @@ import { FaEye, FaEdit, FaTrash, FaSearch, FaCalendar, FaUtensils, FaShare, FaWh
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { Modal, Button, Dropdown } from "react-bootstrap"
+import NavBar from "../components/Navbar"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([])
@@ -145,6 +148,8 @@ const OrdersPage = () => {
 
   return (
     <div className="container my-5">
+      <Header />
+      <NavBar />
       <h1 className="mb-4" style={{ color: "black" }}>
         Orders Management
       </h1>
@@ -282,6 +287,7 @@ const OrdersPage = () => {
           ))}
         </div>
       )}
+      <Footer />
       <Modal show={showDeleteModal} onHide={handleDeleteCancel} centered>
         <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
           <Modal.Title>Confirm Delete</Modal.Title>

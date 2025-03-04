@@ -17,6 +17,8 @@ import VegetablesForm from "../components/VegetablesForm"
 import UtensilsForm from "../components/UtensilsForm"
 import IdliBatterForm from "../components/IdliBatterForm"
 import SmallGrainsForm from "../components/SmallGrainsForm"
+import NavBar from "../components/Navbar"
+
 
 const AddOrder = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -124,6 +126,7 @@ const AddOrder = () => {
 
   return (
     <div className="container py-4">
+      <NavBar />
       <h1 className="mb-4 text-center" style={{ color: "black" }}>
         {orderId ? "Edit Order" : "Add New Order"}
       </h1>

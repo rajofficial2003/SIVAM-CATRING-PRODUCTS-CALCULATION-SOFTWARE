@@ -2,9 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import Header from "./components/Header"
-import NavBar from "./components/Navbar"
-import Footer from "./components/Footer"
 import AddOrder from "./pages/AddOrder"
 import OrdersPage from "./pages/OrdersPage"
 import OrderDetails from "./pages/OrderDetails"
@@ -39,8 +36,6 @@ function App() {
   return (
     <Router>
       <div className="app-container d-flex flex-column min-vh-100">
-        <Header />
-        <NavBar />
         <main className="flex-grow-1" style={{ backgroundColor: "#ffffff" }}>
           <Routes>
             <Route path="/" element={<AddOrder />} />
@@ -50,7 +45,6 @@ function App() {
             <Route path="/shared-order/:orderId" element={<SharedOrderDetails />} />
           </Routes>
         </main>
-        <Footer />
         {showBackToTop && (
           <button className="back-to-top premium-btn" onClick={scrollToTop} aria-label="Back to top">
             <FaArrowUp />

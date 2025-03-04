@@ -9,6 +9,10 @@ import jsPDF from "jspdf"
 import "jspdf-autotable"
 import { Modal, Button, Dropdown, ProgressBar } from "react-bootstrap"
 import html2canvas from "html2canvas"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
+import NavBar from "../components/Navbar"
+
 
 const OrderDetails = () => {
   const { orderId } = useParams()
@@ -166,7 +170,12 @@ const OrderDetails = () => {
       const margins = 40
       let yOffset = margins
 
-      // Add customer details first
+      // Add Header
+      const headerElement = document.querySelector("header")
+      yOffset = await addElementToPDF(headerElement, pdf, pdfWidth, pdfHeight, margins, yOffset)
+      yOffset += 20 // Space after header
+
+      // Add customer details
       const customerCard = content.querySelector(".card:not(.pdf-table)")
       yOffset = await addElementToPDF(customerCard, pdf, pdfWidth, pdfHeight, margins, yOffset)
       yOffset += 10 // Small space after customer details
@@ -220,6 +229,24 @@ const OrderDetails = () => {
         // Update progress
         setPdfProgress((prevProgress) => prevProgress + progressPerTable)
       }
+
+      // Add Footer
+      const footerElement = document.querySelector("footer")
+      const footerHeight = footerElement.offsetHeight
+      const footerCanvas = await html2canvas(footerElement, {
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+        allowTaint: true,
+      })
+      const footerImgData = footerCanvas.toDataURL("image/jpeg", 0.7)
+
+      // Add footer to the last page
+      const footerWidth = pdfWidth - 2 * margins
+      const footerImgHeight = (footerCanvas.height * footerWidth) / footerCanvas.width
+      const footerY = pdfHeight - footerImgHeight - margins
+
+      pdf.addImage(footerImgData, "JPEG", margins, footerY, footerWidth, footerImgHeight)
 
       // Add page numbers
       const pageCount = pdf.internal.getNumberOfPages()
@@ -333,160 +360,165 @@ const OrderDetails = () => {
   }
 
   return (
-    <div className="container py-5">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <div className="d-flex align-items-center mb-3 mb-md-0">
-          <button
-            onClick={() => navigate("/orders")}
-            className="btn me-3"
-            style={{ backgroundColor: "#d33131", color: "white" }}
-          >
-            <FaArrowLeft />
-          </button>
-          <h1 style={{ color: "black", margin: 0 }}>Order Details</h1>
-        </div>
-        <div className="d-flex gap-2">
-          <Link to={`/orders/${orderId}/edit`} className="btn" style={{ backgroundColor: "#d33131", color: "white" }}>
-            <FaEdit className="me-2" /> Edit Order
-          </Link>
-          <button
-            onClick={generatePDF}
-            className="btn"
-            style={{ backgroundColor: "#d33131", color: "white" }}
-            disabled={generating}
-          >
-            <FaDownload className="me-2" /> Download PDF
-          </button>
-          <Dropdown>
-            <Dropdown.Toggle variant="danger" id="dropdown-share">
-              <FaShare className="me-2" /> Share
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={handleShare}>
-                <FaShare className="me-2" /> Copy Link
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleDirectShare("whatsapp")}>
-                <FaWhatsapp className="me-2" /> Share on WhatsApp
-              </Dropdown.Item>
-              {/* Add more direct share options here */}
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-      </div>
-
-      <div id="pdf-content">
-        {/* Customer Details */}
-        <div className="card shadow-sm mb-5">
-          <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
-            <h2 className="card-title h5 mb-0">Customer Details</h2>
+    <>
+      <Header />
+      <div className="container py-5">
+        <NavBar />
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+          <div className="d-flex align-items-center mb-3 mb-md-0">
+            <button
+              onClick={() => navigate("/orders")}
+              className="btn me-3"
+              style={{ backgroundColor: "#d33131", color: "white" }}
+            >
+              <FaArrowLeft />
+            </button>
+            <h1 style={{ color: "black", margin: 0 }}>Order Details</h1>
           </div>
-          <div className="card-body">
-            <div className="row g-3">
-              <div className="col-md-6 col-lg-3">
-                <div className="d-flex flex-column">
-                  <strong>Name:</strong>
-                  <span>{order.customerDetails?.name || "-"}</span>
+          <div className="d-flex gap-2">
+            <Link to={`/orders/${orderId}/edit`} className="btn" style={{ backgroundColor: "#d33131", color: "white" }}>
+              <FaEdit className="me-2" /> Edit Order
+            </Link>
+            <button
+              onClick={generatePDF}
+              className="btn"
+              style={{ backgroundColor: "#d33131", color: "white" }}
+              disabled={generating}
+            >
+              <FaDownload className="me-2" /> Download PDF
+            </button>
+            <Dropdown>
+              <Dropdown.Toggle variant="danger" id="dropdown-share">
+                <FaShare className="me-2" /> Share
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={handleShare}>
+                  <FaShare className="me-2" /> Copy Link
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleDirectShare("whatsapp")}>
+                  <FaWhatsapp className="me-2" /> Share on WhatsApp
+                </Dropdown.Item>
+                {/* Add more direct share options here */}
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div id="pdf-content">
+          {/* Customer Details */}
+          <div className="card shadow-sm mb-5">
+            <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
+              <h2 className="card-title h5 mb-0">Customer Details</h2>
+            </div>
+            <div className="card-body">
+              <div className="row g-3">
+                <div className="col-md-6 col-lg-3">
+                  <div className="d-flex flex-column">
+                    <strong>Name:</strong>
+                    <span>{order.customerDetails?.name || "-"}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-6 col-lg-3">
-                <div className="d-flex flex-column">
-                  <strong>Order Date:</strong>
-                  <span>{order.customerDetails?.orderDate || "-"}</span>
+                <div className="col-md-6 col-lg-3">
+                  <div className="d-flex flex-column">
+                    <strong>Order Date:</strong>
+                    <span>{order.customerDetails?.orderDate || "-"}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-6 col-lg-3">
-                <div className="d-flex flex-column">
-                  <strong>Function Type:</strong>
-                  <span>{order.customerDetails?.functionType || "-"}</span>
+                <div className="col-md-6 col-lg-3">
+                  <div className="d-flex flex-column">
+                    <strong>Function Type:</strong>
+                    <span>{order.customerDetails?.functionType || "-"}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-6 col-lg-3">
-                <div className="d-flex flex-column">
-                  <strong>Mobile Number:</strong>
-                  <span>{order.customerDetails?.mobileNumber || "-"}</span>
+                <div className="col-md-6 col-lg-3">
+                  <div className="d-flex flex-column">
+                    <strong>Mobile Number:</strong>
+                    <span>{order.customerDetails?.mobileNumber || "-"}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="col-12">
-                <div className="d-flex flex-column">
-                  <strong>Address:</strong>
-                  <span>{order.customerDetails?.address || "-"}</span>
+                <div className="col-12">
+                  <div className="d-flex flex-column">
+                    <strong>Address:</strong>
+                    <span>{order.customerDetails?.address || "-"}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Pooja Items */}
+          {renderItemsTable(order.poojaItems, "Pooja Items", ["Rs"])}
+
+          {/* General Items */}
+          {renderItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])}
+
+          {/* Rice and Pulses */}
+          {renderItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])}
+
+          {/* Essence and Color */}
+          {renderItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])}
+          {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])}
+
+          {/* Oils and Flours */}
+          {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])}
+          {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])}
+
+          {/* Masala Items */}
+          {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}
+
+          {/* Sauce and Supplies */}
+          {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])}
+
+          {/* Fruits */}
+          {renderItemsTable(order.fruits, "Fruits", ["Measurement"])}
+
+          {/* Vegetables */}
+          {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}
+
+          {/* Small Grains */}
+          {renderItemsTable(order.smallGrains, "Small Grains", ["Kg"])}
+
+          {/* Utensils */}
+          {renderItemsTable(order.utensils, "Utensils", ["Count"])}
+
+          {/* Idli Batter */}
+          {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
         </div>
 
-        {/* Pooja Items */}
-        {renderItemsTable(order.poojaItems, "Pooja Items", ["Rs"])}
+        {/* Share Modal */}
+        <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
+          <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
+            <Modal.Title>Share Order</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Share this link to view the order details:</p>
+            <div className="input-group mb-3">
+              <input type="text" className="form-control" value={shareLink} readOnly />
+              <button className="btn btn-outline-secondary" type="button" onClick={handleCopyLink}>
+                Copy
+              </button>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowShareModal(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-        {/* General Items */}
-        {renderItemsTable(order.generalItems, "General Items", ["Kg/Bundle(கட்டு)", "Grams"])}
-
-        {/* Rice and Pulses */}
-        {renderItemsTable(order.riceAndPulses, "Rice and Pulses", ["Kg", "Grams"])}
-
-        {/* Essence and Color */}
-        {renderItemsTable(order.essenceAndColor?.essences, "Essence Types", ["ML"])}
-        {renderItemsTable(order.essenceAndColor?.colorPowders, "Color Powder Types", ["Pockets"])}
-
-        {/* Oils and Flours */}
-        {renderItemsTable(order.oilsAndFlours?.oils, "Oil Types", ["Kg", "Liters", "ml", "Count", "Grams"])}
-        {renderItemsTable(order.oilsAndFlours?.flours, "Flour Types", ["Kg"])}
-
-        {/* Masala Items */}
-        {renderItemsTable(order.masala, "Masala Items", ["Kg", "Grams"])}
-
-        {/* Sauce and Supplies */}
-        {renderItemsTable(order.sauceAndSupplies, "Sauce and Supplies", ["Quantity/Liters/Meter"])}
-
-        {/* Fruits */}
-        {renderItemsTable(order.fruits, "Fruits", ["Measurement"])}
-
-        {/* Vegetables */}
-        {renderItemsTable(order.vegetables, "Vegetables", ["Measurement"])}
-
-        {/* Small Grains */}
-        {renderItemsTable(order.smallGrains, "Small Grains", ["Kg"])}
-
-        {/* Utensils */}
-        {renderItemsTable(order.utensils, "Utensils", ["Count"])}
-
-        {/* Idli Batter */}
-        {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
+        {/* PDF Generation Modal */}
+        <Modal show={showPdfModal} centered backdrop="static" keyboard={false}>
+          <Modal.Header style={{ backgroundColor: "#d33131", color: "white" }}>
+            <Modal.Title>Generating PDF</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Please wait while we generate your PDF...</p>
+            <ProgressBar animated now={pdfProgress} label={`${Math.round(pdfProgress)}%`} />
+          </Modal.Body>
+        </Modal>
       </div>
-
-      {/* Share Modal */}
-      <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
-        <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
-          <Modal.Title>Share Order</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Share this link to view the order details:</p>
-          <div className="input-group mb-3">
-            <input type="text" className="form-control" value={shareLink} readOnly />
-            <button className="btn btn-outline-secondary" type="button" onClick={handleCopyLink}>
-              Copy
-            </button>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowShareModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* PDF Generation Modal */}
-      <Modal show={showPdfModal} centered backdrop="static" keyboard={false}>
-        <Modal.Header style={{ backgroundColor: "#d33131", color: "white" }}>
-          <Modal.Title>Generating PDF</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Please wait while we generate your PDF...</p>
-          <ProgressBar animated now={pdfProgress} label={`${Math.round(pdfProgress)}%`} />
-        </Modal.Body>
-      </Modal>
-    </div>
+      <Footer />
+    </>
   )
 }
 
