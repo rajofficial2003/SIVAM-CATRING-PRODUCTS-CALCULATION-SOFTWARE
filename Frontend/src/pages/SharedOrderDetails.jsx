@@ -216,6 +216,7 @@ const SharedOrderDetails = () => {
 
           // Add the row
           yOffset = await addElementToPDF(rows[j], pdf, pdfWidth, pdfHeight, margins, yOffset)
+          yOffset += 2 // Small gap between rows
         }
 
         // Add a small space after the table
@@ -229,12 +230,12 @@ const SharedOrderDetails = () => {
       const footerElement = document.querySelector("footer")
       const footerHeight = footerElement.offsetHeight
       const footerCanvas = await html2canvas(footerElement, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         logging: false,
         allowTaint: true,
       })
-      const footerImgData = footerCanvas.toDataURL("image/jpeg", 0.7)
+      const footerImgData = footerCanvas.toDataURL("image/jpeg", 1.0)
 
       // Add footer to the last page
       const footerWidth = pdfWidth - 2 * margins
@@ -274,13 +275,13 @@ const SharedOrderDetails = () => {
   const addElementToPDF = async (element, pdf, pdfWidth, pdfHeight, margins, yOffset) => {
     try {
       const canvas = await html2canvas(element, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         logging: false,
         allowTaint: true,
-        windowWidth: Math.max(document.documentElement.clientWidth, 1024), // Ensure minimum width for consistent rendering
+        windowWidth: 1600, // Increased width for better mobile rendering
       })
-      const imgData = canvas.toDataURL("image/jpeg", 0.7)
+      const imgData = canvas.toDataURL("image/jpeg", 1.0)
       const imgWidth = pdfWidth - 2 * margins
       const imgHeight = (canvas.height * imgWidth) / canvas.width
 
@@ -292,7 +293,7 @@ const SharedOrderDetails = () => {
 
       // Center the image horizontally
       const xOffset = (pdfWidth - imgWidth) / 2
-      pdf.addImage(imgData, "JPEG", xOffset, yOffset, imgWidth, imgHeight, "", "FAST")
+      pdf.addImage(imgData, "JPEG", xOffset, yOffset, imgWidth, imgHeight)
 
       return yOffset + imgHeight
     } catch (error) {
@@ -428,6 +429,7 @@ const SharedOrderDetails = () => {
           <Modal.Body>
             <p>Please wait while we generate your PDF...</p>
             <ProgressBar animated now={pdfProgress} label={`${Math.round(pdfProgress)}%`} />
+            <p className="mt-2 small text-muted">Generating high-quality PDF (up to 10MB). This may take a moment...</p>
           </Modal.Body>
         </Modal>
       </div>
