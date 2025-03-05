@@ -13,7 +13,6 @@ import Header from "../components/Header"
 import Footer from "../components/Footer"
 import NavBar from "../components/Navbar"
 
-
 const OrderDetails = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
@@ -283,6 +282,7 @@ const OrderDetails = () => {
         useCORS: true,
         logging: false,
         allowTaint: true,
+        windowWidth: Math.max(document.documentElement.clientWidth, 1024), // Ensure minimum width for consistent rendering
       })
       const imgData = canvas.toDataURL("image/jpeg", 0.7)
       const imgWidth = pdfWidth - 2 * margins
