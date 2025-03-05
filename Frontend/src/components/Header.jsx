@@ -14,19 +14,19 @@ const Header = () => {
   }
 
   const businessNameStyle = {
-    color: "#d33131",
+    color: "#1f5b3a",
     fontWeight: "bold",
     margin: "0",
   }
 
   const businessSubtitleStyle = {
-    color: "#000000",
+    color: "red",
     fontSize: "1.2rem",
     fontWeight: "normal",
   }
 
   const businessAddressStyle = {
-    color: "#000000",
+    color: "red",
     fontSize: "1rem",
   }
 
@@ -44,15 +44,15 @@ const Header = () => {
           </div>
           <div className="col-md-8 text-center mb-3 mb-md-0">
             <h1 style={businessNameStyle} className="py-1"> சாணானந்தல் சிவம் </h1>
-            <h3 style={businessSubtitleStyle}>M.அருள்சங்கர், P.பாலாஜி</h3>
+            <h3 style={businessSubtitleStyle}><b>M.அருள்சங்கர், P.பாலாஜி</b></h3>
             <h2 style={businessNameStyle} className=""> சமையல் காண்ட்ராக்ட் </h2>
-            <p style={businessAddressStyle}> தி.மலை  மாவட்டம் - 606 805</p>
+            <p style={businessAddressStyle}> <b>திருவண்ணாமலை</b></p>
           </div>
           <div className="col-md-2 text-center text-md-start">
             <div style={contactInfoStyle}>
               <h3 className="text-center text-md-start">Cell:</h3>
-              <h3 className="mb-1">9047176011</h3>
-              <h3 className="mb-0">9786232524</h3>
+              <h3 className="mb-1 text-dark"><b>9047176011</b></h3>
+              <h3 className="mb-0 text-dark"><b>9786232524</b></h3>
             </div>
           </div>
         </div>

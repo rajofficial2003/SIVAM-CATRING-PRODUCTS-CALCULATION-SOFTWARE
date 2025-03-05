@@ -58,7 +58,7 @@ const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
     <div className="container mb-4">
       {/* Essence Types Section */}
       <div className="card shadow-sm mb-4">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">எஸ்சென்ஸ் வகைகள்</span>
             <span className="english-text"> / Essence Types</span>
@@ -108,7 +108,7 @@ const EssenceAndColorForm = forwardRef(({ initialData }, ref) => {
 
       {/* Color Powder Types Section */}
       <div className="card shadow-sm">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">கலர் பவுடர் வகைகள்</span>
             <span className="english-text"> / Color Powder Types</span>

@@ -83,10 +83,9 @@ main {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #d33131, #b52020);
+  background: linear-gradient(145deg, #3d9565, #3d9565);
   color: white;
   border: none;
-  box-shadow: 0 2px 10px rgba(211, 49, 49, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;

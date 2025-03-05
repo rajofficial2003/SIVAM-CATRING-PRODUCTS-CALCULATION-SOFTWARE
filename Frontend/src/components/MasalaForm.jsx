@@ -44,7 +44,7 @@ const MasalaForm = forwardRef(({ initialData }, ref) => {
   return (
     <div className="container mb-4">
       <div className="card shadow-sm">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">மசாலா வகைகள்</span>
             <span className="english-text"> / Masala Types</span>

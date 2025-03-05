@@ -37,7 +37,7 @@ const PoojaItemsForm = forwardRef(({ initialData }, ref) => {
       <div className="container">
         <form>
           <div className="card shadow-sm">
-            <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+            <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
               <h3 className="card-title mb-0">
                 <span className="tamil-text">பூஜைப் பொருட்கள்</span>
                 <span className="english-text"> / Pooja Items</span>

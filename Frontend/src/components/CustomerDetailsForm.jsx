@@ -48,7 +48,7 @@ const CustomerDetailsForm = forwardRef(({ initialData }, ref) => {
   return (
     <div className="container mb-4">
       <div className="card shadow-sm">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">வாடிக்கையாளர் விவரங்கள்</span>
             <span className="english-text"> / Customer Details</span>
@@ -77,7 +77,7 @@ const CustomerDetailsForm = forwardRef(({ initialData }, ref) => {
                 <span className="english-text"> / Order Date</span>
               </label>
               <div className="input-group">
-                <span className="input-group-text" style={{ backgroundColor: "#d33131", color: "white" }}>
+                <span className="input-group-text" style={{ backgroundColor: "#3d9565", color: "white" }}>
                   <FaCalendar />
                 </span>
                 <DatePicker

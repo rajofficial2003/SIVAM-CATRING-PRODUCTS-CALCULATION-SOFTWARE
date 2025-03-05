@@ -73,7 +73,7 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
     <div className="container mb-4">
       {/* Oils Section */}
       <div className="card shadow-sm mb-4">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">எண்ணெய் வகைகள்</span>
             <span className="english-text"> / Oil Types</span>
@@ -186,7 +186,7 @@ const OilsAndFloursForm = forwardRef(({ initialData }, ref) => {
 
       {/* Flours Section */}
       <div className="card shadow-sm">
-        <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">
             <span className="tamil-text">மாவு வகைகள்</span>
             <span className="english-text"> / Flour Types</span>

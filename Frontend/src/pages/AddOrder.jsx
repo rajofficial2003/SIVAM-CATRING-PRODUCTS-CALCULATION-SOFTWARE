@@ -138,13 +138,13 @@ const AddOrder = () => {
       <PoojaItemsForm ref={poojaItemsRef} initialData={existingOrder?.poojaItems} />
       <GeneralItemsForm ref={generalItemsRef} initialData={existingOrder?.generalItems} />
       <RiceAndPulsesForm ref={riceAndPulsesRef} initialData={existingOrder?.riceAndPulses} />
+      <SmallGrainsForm ref={smallGrainsRef} initialData={existingOrder?.smallGrains} />
       <EssenceAndColorForm ref={essenceAndColorRef} initialData={existingOrder?.essenceAndColor} />
       <OilsAndFloursForm ref={oilsAndFloursRef} initialData={existingOrder?.oilsAndFlours} />
       <MasalaForm ref={masalaRef} initialData={existingOrder?.masala} />
       <SauceAndSuppliesForm ref={sauceAndSuppliesRef} initialData={existingOrder?.sauceAndSupplies} />
       <FruitsForm ref={fruitsRef} initialData={existingOrder?.fruits} />
       <VegetablesForm ref={vegetablesRef} initialData={existingOrder?.vegetables} />
-      <SmallGrainsForm ref={smallGrainsRef} initialData={existingOrder?.smallGrains} />
       <UtensilsForm ref={utensilsRef} initialData={existingOrder?.utensils} />
       <IdliBatterForm ref={idliBatterRef} initialData={existingOrder?.idliBatter} />
 
@@ -160,13 +160,13 @@ const AddOrder = () => {
           onClick={handleSubmit}
           disabled={isSubmitting}
           style={{
-            backgroundColor: "#d33131",
+            backgroundColor: "#3d9565",
             color: "white",
             border: "none",
             transition: "background-color 0.3s",
           }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#b52020")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#d33131")}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#3d9565")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#3d9565")}
         >
           {isSubmitting ? "Submitting..." : orderId ? "Update Order" : "Submit Order"}
         </button>
