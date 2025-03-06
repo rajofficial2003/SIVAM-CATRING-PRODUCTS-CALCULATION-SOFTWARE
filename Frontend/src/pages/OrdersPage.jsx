@@ -140,7 +140,7 @@ const OrdersPage = () => {
   if (error)
     return (
       <div className="container mt-5">
-        <div className="alert" style={{ backgroundColor: "#d33131", color: "white" }} role="alert">
+        <div className="alert" style={{ backgroundColor: "#3d9565", color: "white" }} role="alert">
           {error}
         </div>
       </div>
@@ -153,12 +153,12 @@ const OrdersPage = () => {
       <h1 className="mb-4" style={{ color: "black" }}>
         Orders Management
       </h1>
-      <div className="card shadow-sm mb-4" style={{ backgroundColor: "white", borderColor: "#d33131" }}>
+      <div className="card shadow-sm mb-4" style={{ backgroundColor: "white", borderColor: "#3d9565" }}>
         <div className="card-body p-4">
           <div className="row g-3">
             <div className="col-md-4">
               <div className="input-group">
-                <span className="input-group-text" style={{ backgroundColor: "#d33131", color: "white" }}>
+                <span className="input-group-text" style={{ backgroundColor: "#3d9565", color: "white" }}>
                   <FaSearch />
                 </span>
                 <input
@@ -172,7 +172,7 @@ const OrdersPage = () => {
             </div>
             <div className="col-md-4">
               <div className="input-group">
-                <span className="input-group-text" style={{ backgroundColor: "#d33131", color: "white" }}>
+                <span className="input-group-text" style={{ backgroundColor: "#3d9565", color: "white" }}>
                   <FaCalendar />
                 </span>
                 <DatePicker
@@ -187,7 +187,7 @@ const OrdersPage = () => {
             </div>
             <div className="col-md-4">
               <div className="input-group">
-                <span className="input-group-text" style={{ backgroundColor: "#d33131", color: "white" }}>
+                <span className="input-group-text" style={{ backgroundColor: "#3d9565", color: "white" }}>
                   <FaCalendar />
                 </span>
                 <select className="form-select" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)}>
@@ -206,7 +206,7 @@ const OrdersPage = () => {
       {filteredOrders.length === 0 && loadingOrders.every((loading) => !loading) ? (
         <div
           className="alert"
-          style={{ backgroundColor: "white", color: "#d33131", border: "1px solid #d33131" }}
+          style={{ backgroundColor: "white", color: "#3d9565", border: "1px solid #3d9565" }}
           role="alert"
         >
           No orders found.
@@ -224,7 +224,7 @@ const OrdersPage = () => {
                 </div>
               ) : (
                 <div className="card h-100 shadow-sm border-0">
-                  <div className="card-header" style={{ backgroundColor: "#d33131", color: "white" }}>
+                  <div className="card-header" style={{ backgroundColor: "#3d9565", color: "white" }}>
                     <h5 className="card-title mb-0">{order.customerDetails.name}</h5>
                   </div>
                   <div className="card-body" style={{ backgroundColor: "white" }}>
@@ -238,25 +238,25 @@ const OrdersPage = () => {
                       <strong>Address:</strong> {order.customerDetails.address}
                     </p>
                   </div>
-                  <div className="card-footer" style={{ backgroundColor: "white", borderTop: "1px solid #d33131" }}>
+                  <div className="card-footer" style={{ backgroundColor: "white", borderTop: "1px solid #3d9565" }}>
                     <div className="d-flex justify-content-between">
                       <button
                         className="btn btn-sm"
-                        style={{ backgroundColor: "#d33131", color: "white" }}
+                        style={{ backgroundColor: "#3d9565", color: "white" }}
                         onClick={() => handleViewDetails(order.id)}
                       >
                         <FaEye className="me-1" /> View
                       </button>
                       <button
                         className="btn btn-sm"
-                        style={{ backgroundColor: "white", color: "#d33131", borderColor: "#d33131" }}
+                        style={{ backgroundColor: "white", color: "#3d9565", borderColor: "#3d9565" }}
                         onClick={() => handleEdit(order.id)}
                       >
                         <FaEdit className="me-1" /> Edit
                       </button>
                       <button
                         className="btn btn-sm"
-                        style={{ backgroundColor: "#d33131", color: "white" }}
+                        style={{ backgroundColor: "#3d9565", color: "white" }}
                         onClick={() => handleDeleteClick(order.id)}
                       >
                         <FaTrash className="me-1" /> Delete
@@ -266,7 +266,7 @@ const OrdersPage = () => {
                           variant="danger"
                           id={`dropdown-share-${order.id}`}
                           size="sm"
-                          style={{ backgroundColor: "#d33131", borderColor: "#d33131" }}
+                          style={{ backgroundColor: "#3d9565", borderColor: "#3d9565" }}
                         >
                           <FaShare className="me-1" /> Share
                         </Dropdown.Toggle>
@@ -289,7 +289,7 @@ const OrdersPage = () => {
       )}
       <Footer />
       <Modal show={showDeleteModal} onHide={handleDeleteCancel} centered>
-        <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
+        <Modal.Header closeButton style={{ backgroundColor: "#3d9565", color: "white" }}>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
         <Modal.Body>Are you sure you want to delete this order?</Modal.Body>
@@ -303,7 +303,7 @@ const OrdersPage = () => {
         </Modal.Footer>
       </Modal>
       <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
-        <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
+        <Modal.Header closeButton style={{ backgroundColor: "#3d9565", color: "white" }}>
           <Modal.Title>Share Order</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -331,12 +331,12 @@ const OrdersPage = () => {
         }
         .loading-icon {
           font-size: 2rem;
-          color: #d33131;
+          color: #3d9565;
           animation: spin 2s linear infinite;
         }
         .loading-text {
           margin-top: 0.5rem;
-          color: #d33131;
+          color: #3d9565;
           font-weight: bold;
         }
         @keyframes spin {

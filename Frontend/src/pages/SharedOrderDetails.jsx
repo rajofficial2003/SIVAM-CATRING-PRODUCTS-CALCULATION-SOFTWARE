@@ -46,7 +46,7 @@ const SharedOrderDetails = () => {
 
     return (
       <div className="card shadow-sm mb-5 pdf-table">
-        <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header text-center" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">{title}</h3>
         </div>
         <div className="card-body p-3">
@@ -304,7 +304,7 @@ const SharedOrderDetails = () => {
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border" style={{ color: "#d33131" }} role="status">
+        <div className="spinner-border" style={{ color: "#3d9565" }} role="status">
           <span className="visually-hidden">Loading order details...</span>
         </div>
       </div>
@@ -314,7 +314,7 @@ const SharedOrderDetails = () => {
   if (!order) {
     return (
       <div className="container mt-5">
-        <div className="alert" style={{ backgroundColor: "#d33131", color: "white" }} role="alert">
+        <div className="alert" style={{ backgroundColor: "#3d9565", color: "white" }} role="alert">
           Order not found.
         </div>
       </div>
@@ -331,7 +331,7 @@ const SharedOrderDetails = () => {
             <button
               onClick={generatePDF}
               className="btn"
-              style={{ backgroundColor: "#d33131", color: "white" }}
+              style={{ backgroundColor: "#3d9565", color: "white" }}
               disabled={generating}
             >
               <FaDownload className="me-2" /> Download PDF
@@ -342,7 +342,7 @@ const SharedOrderDetails = () => {
         <div id="pdf-content">
           {/* Customer Details */}
           <div className="card shadow-sm mb-5">
-            <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
+            <div className="card-header text-center" style={{ backgroundColor: "#3d9565", color: "white" }}>
               <h2 className="card-title h5 mb-0">Customer Details</h2>
             </div>
             <div className="card-body">
@@ -422,7 +422,7 @@ const SharedOrderDetails = () => {
 
         {/* PDF Generation Modal */}
         <Modal show={showPdfModal} centered backdrop="static" keyboard={false}>
-          <Modal.Header style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Header style={{ backgroundColor: "#3d9565", color: "white" }}>
             <Modal.Title>Generating PDF</Modal.Title>
           </Modal.Header>
           <Modal.Body>

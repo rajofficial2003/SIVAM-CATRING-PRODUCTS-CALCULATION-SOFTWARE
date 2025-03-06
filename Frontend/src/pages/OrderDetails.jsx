@@ -50,7 +50,7 @@ const OrderDetails = () => {
 
     return (
       <div className="card shadow-sm mb-5 pdf-table">
-        <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
+        <div className="card-header text-center" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">{title}</h3>
         </div>
         <div className="card-body p-3">
@@ -335,7 +335,7 @@ const OrderDetails = () => {
   if (loading) {
     return (
       <div className="container mt-5 text-center">
-        <div className="spinner-border" style={{ color: "#d33131" }} role="status">
+        <div className="spinner-border" style={{ color: "#3d9565" }} role="status">
           <span className="visually-hidden">Loading order details...</span>
         </div>
       </div>
@@ -345,13 +345,13 @@ const OrderDetails = () => {
   if (!order) {
     return (
       <div className="container mt-5">
-        <div className="alert" style={{ backgroundColor: "#d33131", color: "white" }} role="alert">
+        <div className="alert" style={{ backgroundColor: "#3d9565", color: "white" }} role="alert">
           Order not found.
         </div>
         <button
           onClick={() => navigate("/orders")}
           className="btn"
-          style={{ backgroundColor: "#d33131", color: "white" }}
+          style={{ backgroundColor: "#3d9565", color: "white" }}
         >
           <FaArrowLeft className="me-2" /> Back to Orders
         </button>
@@ -369,26 +369,26 @@ const OrderDetails = () => {
             <button
               onClick={() => navigate("/orders")}
               className="btn me-3"
-              style={{ backgroundColor: "#d33131", color: "white" }}
+              style={{ backgroundColor: "#3d9565", color: "white" }}
             >
               <FaArrowLeft />
             </button>
             <h1 style={{ color: "black", margin: 0 }}>Order Details</h1>
           </div>
           <div className="d-flex gap-2">
-            <Link to={`/orders/${orderId}/edit`} className="btn" style={{ backgroundColor: "#d33131", color: "white" }}>
+            <Link to={`/orders/${orderId}/edit`} className="btn" style={{ backgroundColor: "#3d9565", color: "white" }}>
               <FaEdit className="me-2" /> Edit Order
             </Link>
             <button
               onClick={generatePDF}
               className="btn"
-              style={{ backgroundColor: "#d33131", color: "white" }}
+              style={{ backgroundColor: "#3d9565", color: "white" }}
               disabled={generating}
             >
               <FaDownload className="me-2" /> Download PDF
             </button>
             <Dropdown>
-              <Dropdown.Toggle variant="danger" id="dropdown-share">
+              <Dropdown.Toggle variant="success" id="dropdown-share">
                 <FaShare className="me-2" /> Share
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -407,7 +407,7 @@ const OrderDetails = () => {
         <div id="pdf-content">
           {/* Customer Details */}
           <div className="card shadow-sm mb-5">
-            <div className="card-header text-center" style={{ backgroundColor: "#d33131", color: "white" }}>
+            <div className="card-header text-center" style={{ backgroundColor: "#3d9565", color: "white" }}>
               <h2 className="card-title h5 mb-0">Customer Details</h2>
             </div>
             <div className="card-body">
@@ -487,7 +487,7 @@ const OrderDetails = () => {
 
         {/* Share Modal */}
         <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
-          <Modal.Header closeButton style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Header closeButton style={{ backgroundColor: "#3d9565", color: "white" }}>
             <Modal.Title>Share Order</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -508,7 +508,7 @@ const OrderDetails = () => {
 
         {/* PDF Generation Modal */}
         <Modal show={showPdfModal} centered backdrop="static" keyboard={false}>
-          <Modal.Header style={{ backgroundColor: "#d33131", color: "white" }}>
+          <Modal.Header style={{ backgroundColor: "#3d9565", color: "white" }}>
             <Modal.Title>Generating PDF</Modal.Title>
           </Modal.Header>
           <Modal.Body>
