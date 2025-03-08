@@ -12,6 +12,16 @@ import { Modal, ProgressBar } from "react-bootstrap"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 
+const pdfStyles = `
+  @media print {
+    .table-bordered,
+    .table-bordered th,
+    .table-bordered td {
+      border: 1px solid black !important;
+    }
+  }
+`
+
 const SharedOrderDetails = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
@@ -51,15 +61,15 @@ const SharedOrderDetails = () => {
         </div>
         <div className="card-body p-3">
           <div className="table-responsive">
-            <table className="table table-bordered table-hover mb-0 text-center">
+            <table className="table table-bordered table-hover mb-0 text-center" style={{ border: "1px solid black" }}>
               <thead className="sticky-top" style={{ backgroundColor: "#f8f9fa" }}>
                 <tr>
-                  <th className="align-middle text-start">
+                  <th className="align-middle text-start" style={{ border: "1px solid black" }}>
                     <span className="tamil-text">பொருட்கள்</span>
                     <span className="english-text"> / Items</span>
                   </th>
                   {columns.map((col, index) => (
-                    <th key={index} className="align-middle">
+                    <th key={index} className="align-middle" style={{ border: "1px solid black" }}>
                       {col}
                     </th>
                   ))}
@@ -68,7 +78,7 @@ const SharedOrderDetails = () => {
               <tbody>
                 {items.map((item, index) => (
                   <tr key={index}>
-                    <td className="text-start align-middle">
+                    <td className="text-start align-middle" style={{ border: "1px solid black" }}>
                       <span className="tamil-text">{item.tamilName || "-"}</span>
                       <span className="english-text"> / {item.englishName || "-"}</span>
                     </td>
@@ -133,7 +143,7 @@ const SharedOrderDetails = () => {
                         value = item[key] || "-"
                       }
                       return (
-                        <td key={colIndex} className="align-middle">
+                        <td key={colIndex} className="align-middle" style={{ border: "1px solid black" }}>
                           {value}
                         </td>
                       )
@@ -300,6 +310,18 @@ const SharedOrderDetails = () => {
       return yOffset
     }
   }
+
+  useEffect(() => {
+    // Add the styles to the document
+    const styleElement = document.createElement("style")
+    styleElement.innerHTML = pdfStyles
+    document.head.appendChild(styleElement)
+
+    return () => {
+      // Clean up
+      document.head.removeChild(styleElement)
+    }
+  }, [])
 
   if (loading) {
     return (
