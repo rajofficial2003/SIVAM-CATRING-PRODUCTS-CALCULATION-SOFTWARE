@@ -4,10 +4,18 @@ import { useState, useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "../firebase/config"
-import { FaEdit, FaArrowLeft, FaDownload, FaShare, FaWhatsapp } from "react-icons/fa"
+import {
+  FaEdit,
+  FaArrowLeft,
+  FaDownload,
+  FaShare,
+  FaWhatsapp,
+  FaCheckCircle,
+  FaExclamationTriangle,
+} from "react-icons/fa"
 import jsPDF from "jspdf"
 import "jspdf-autotable"
-import { Modal, Button, Dropdown, ProgressBar } from "react-bootstrap"
+import { Modal, Dropdown, ProgressBar, Alert } from "react-bootstrap"
 import html2canvas from "html2canvas"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
@@ -28,10 +36,12 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
-  const [showShareModal, setShowShareModal] = useState(false)
-  const [shareLink, setShareLink] = useState("")
   const [showPdfModal, setShowPdfModal] = useState(false)
   const [pdfProgress, setPdfProgress] = useState(0)
+  const [verificationStatus, setVerificationStatus] = useState("")
+  const [verificationResults, setVerificationResults] = useState(null)
+  const [showVerificationModal, setShowVerificationModal] = useState(false)
+  const [verificationPassed, setVerificationPassed] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -46,7 +56,9 @@ const OrderDetails = () => {
 
     return () => {
       // Clean up
-      document.head.removeChild(styleElement)
+      if (document.head.contains(styleElement)) {
+        document.head.removeChild(styleElement)
+      }
     }
   }, [])
 
@@ -68,10 +80,17 @@ const OrderDetails = () => {
   }
 
   const renderItemsTable = (items, title, columns) => {
-    if (!items || items.length === 0) return null
+    // Always render table structure even if no items
+    const tableItems = items && items.length > 0 ? items : []
+    const hasData = tableItems.length > 0
 
     return (
-      <div className="card shadow-sm mb-5 pdf-table">
+      <div
+        className="card shadow-sm mb-5 pdf-table"
+        data-table-title={title}
+        data-items-count={tableItems.length}
+        data-has-data={hasData}
+      >
         <div className="card-header text-center" style={{ backgroundColor: "#3d9565", color: "white" }}>
           <h3 className="card-title mb-0">{title}</h3>
         </div>
@@ -92,86 +111,255 @@ const OrderDetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item, index) => (
-                  <tr key={index}>
-                    <td className="text-start align-middle" style={{ border: "1px solid black" }}>
-                      <span className="tamil-text">{item.tamilName || "-"}</span>
-                      <span className="english-text"> / {item.englishName || "-"}</span>
+                {hasData ? (
+                  tableItems.map((item, index) => (
+                    <tr key={index} data-row-index={index}>
+                      <td className="text-start align-middle" style={{ border: "1px solid black" }}>
+                        <span className="tamil-text">{item.tamilName || "-"}</span>
+                        <span className="english-text"> / {item.englishName || "-"}</span>
+                      </td>
+                      {columns.map((col, colIndex) => {
+                        const key = col.toLowerCase().replace(/ /g, "")
+                        let value = "-"
+                        if (title === "Oil Types") {
+                          if (key === "kg") {
+                            value = item.kg ? `${item.kg} (Kg)` : "-"
+                          } else if (key === "liters") {
+                            value = item.liters ? `${item.liters} (Liters)` : "-"
+                          } else if (key === "ml") {
+                            value = item.ml ? `${item.ml} (ml)` : "-"
+                          } else if (key === "count") {
+                            value = item.count ? `${item.count} (Count)` : "-"
+                          } else if (key === "grams") {
+                            value = item.grams ? `${item.grams} (Grams)` : "-"
+                          }
+                        } else if (title === "Vegetables") {
+                          if (item.id === 40 || item.id === 44 || item.id === 45) {
+                            value = `${item.count} (Count)`
+                          } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
+                            value = `${item.bundle} (கட்டு)`
+                          } else if ([14, 15, 34, 35, 36].includes(item.id)) {
+                            value = `${item.quantity} (Quantity)`
+                          } else {
+                            value = `${item.kg} (Kg)`
+                          }
+                        } else if (title === "Color Powder Types") {
+                          value = `${item.pockets} (Pockets)`
+                        } else if (title === "Flour Types") {
+                          value = `${item.kg} (Kg)`
+                        } else if (title === "General Items") {
+                          if (item.id === 50) {
+                            value = `${item.bundle} (கட்டு)`
+                          } else if (item.id === 59) {
+                            value = `${item.count} (Count)`
+                          } else if (key === "kg/bundle(கட்டு)") {
+                            value = item.kg ? `${item.kg} (Kg)` : "-"
+                          } else if (key === "grams") {
+                            value = item.grams ? `${item.grams} (Grams)` : "-"
+                          }
+                        } else if (title === "Pooja Items") {
+                          value = `${item.rs} (Rs)`
+                        } else if (title === "Sauce and Supplies") {
+                          if (item.quantity) {
+                            value = `${item.quantity} (Quantity)`
+                          } else if (item.liters) {
+                            value = `${item.liters} (Liters)`
+                          } else if (item.meter) {
+                            value = `${item.meter} (Meter)`
+                          } else {
+                            value = "-"
+                          }
+                        } else if (title === "Fruits") {
+                          if (item.id === 2 || item.id === 6) {
+                            value = `${item.quantity} (Quantity)`
+                          } else {
+                            value = `${item.kg} (Kg)`
+                          }
+                        } else {
+                          value = item[key] || "-"
+                        }
+                        return (
+                          <td key={colIndex} className="align-middle" style={{ border: "1px solid black" }}>
+                            {value}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={columns.length + 1}
+                      className="text-center align-middle text-muted"
+                      style={{ border: "1px solid black", padding: "20px" }}
+                    >
+                      No items in this category
                     </td>
-                    {columns.map((col, colIndex) => {
-                      const key = col.toLowerCase().replace(/ /g, "")
-                      let value = "-"
-                      if (title === "Oil Types") {
-                        if (key === "kg") {
-                          value = item.kg ? `${item.kg} (Kg)` : "-"
-                        } else if (key === "liters") {
-                          value = item.liters ? `${item.liters} (Liters)` : "-"
-                        } else if (key === "ml") {
-                          value = item.ml ? `${item.ml} (ml)` : "-"
-                        } else if (key === "count") {
-                          value = item.count ? `${item.count} (Count)` : "-"
-                        } else if (key === "grams") {
-                          value = item.grams ? `${item.grams} (Grams)` : "-"
-                        }
-                      } else if (title === "Vegetables") {
-                        if (item.id === 40 || item.id === 44 || item.id === 45) {
-                          value = `${item.count} (Count)`
-                        } else if ([37, 38, 39, 42, 43, 46].includes(item.id)) {
-                          value = `${item.bundle} (கட்டு)`
-                        } else if ([14, 15, 34, 35, 36].includes(item.id)) {
-                          value = `${item.quantity} (Quantity)`
-                        } else {
-                          value = `${item.kg} (Kg)`
-                        }
-                      } else if (title === "Color Powder Types") {
-                        value = `${item.pockets} (Pockets)`
-                      } else if (title === "Flour Types") {
-                        value = `${item.kg} (Kg)`
-                      } else if (title === "General Items") {
-                        if (item.id === 50) {
-                          value = `${item.bundle} (கட்டு)`
-                        } else if (item.id === 59) {
-                          value = `${item.count} (Count)`
-                        } else if (key === "kg/bundle(கட்டு)") {
-                          value = item.kg ? `${item.kg} (Kg)` : "-"
-                        } else if (key === "grams") {
-                          value = item.grams ? `${item.grams} (Grams)` : "-"
-                        }
-                      } else if (title === "Pooja Items") {
-                        value = `${item.rs} (Rs)`
-                      } else if (title === "Sauce and Supplies") {
-                        if (item.quantity) {
-                          value = `${item.quantity} (Quantity)`
-                        } else if (item.liters) {
-                          value = `${item.liters} (Liters)`
-                        } else if (item.meter) {
-                          value = `${item.meter} (Meter)`
-                        } else {
-                          value = "-"
-                        }
-                      } else if (title === "Fruits") {
-                        if (item.id === 2 || item.id === 6) {
-                          value = `${item.quantity} (Quantity)`
-                        } else {
-                          value = `${item.kg} (Kg)`
-                        }
-                      } else {
-                        value = item[key] || "-"
-                      }
-                      return (
-                        <td key={colIndex} className="align-middle" style={{ border: "1px solid black" }}>
-                          {value}
-                        </td>
-                      )
-                    })}
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
     )
+  }
+
+  // Comprehensive verification function
+  const verifyAllTableData = async () => {
+    setVerificationStatus("Starting comprehensive data verification...")
+    const results = {
+      totalTables: 0,
+      totalExpectedRows: 0,
+      totalRenderedRows: 0,
+      emptyTables: 0,
+      tableDetails: [],
+      issues: [],
+      isValid: true,
+    }
+
+    try {
+      const content = document.getElementById("pdf-content")
+      const tables = content.querySelectorAll(".pdf-table")
+      results.totalTables = tables.length
+
+      setVerificationStatus(`Verifying ${results.totalTables} tables...`)
+
+      for (let i = 0; i < tables.length; i++) {
+        const table = tables[i]
+        const tableTitle = table.getAttribute("data-table-title") || `Table ${i + 1}`
+        const expectedItemsCount = Number.parseInt(table.getAttribute("data-items-count")) || 0
+        const hasData = table.getAttribute("data-has-data") === "true"
+        const renderedRows = table.querySelectorAll("tbody tr")
+        const actualRowsCount = renderedRows.length
+
+        const tableDetail = {
+          title: tableTitle,
+          expectedRows: expectedItemsCount,
+          renderedRows: actualRowsCount,
+          hasData: hasData,
+          isEmpty: !hasData,
+          isComplete: hasData ? expectedItemsCount === actualRowsCount : true, // Empty tables are considered complete
+          hasVisibleContent: table.offsetHeight > 0 && table.offsetWidth > 0,
+        }
+
+        if (!hasData) {
+          results.emptyTables++
+        }
+
+        // Check if all rows have proper content (skip for empty tables)
+        let emptyRowsCount = 0
+        if (hasData) {
+          renderedRows.forEach((row, rowIndex) => {
+            const cells = row.querySelectorAll("td")
+            let hasContent = false
+            cells.forEach((cell) => {
+              if (
+                cell.textContent.trim() &&
+                cell.textContent.trim() !== "-" &&
+                cell.textContent.trim() !== "No items in this category"
+              ) {
+                hasContent = true
+              }
+            })
+            if (!hasContent) {
+              emptyRowsCount++
+            }
+          })
+        }
+
+        tableDetail.emptyRows = emptyRowsCount
+        tableDetail.contentRows = actualRowsCount - emptyRowsCount
+
+        results.totalExpectedRows += expectedItemsCount
+        results.totalRenderedRows += actualRowsCount
+
+        if (hasData && !tableDetail.isComplete) {
+          results.issues.push(`${tableTitle}: Expected ${expectedItemsCount} rows, found ${actualRowsCount}`)
+          results.isValid = false
+        }
+
+        if (!tableDetail.hasVisibleContent) {
+          results.issues.push(`${tableTitle}: Table content is not properly rendered`)
+          results.isValid = false
+        }
+
+        if (hasData && emptyRowsCount > 0) {
+          results.issues.push(`${tableTitle}: Found ${emptyRowsCount} empty rows`)
+        }
+
+        results.tableDetails.push(tableDetail)
+        setVerificationStatus(
+          `Verified ${tableTitle} - ${hasData ? `${actualRowsCount}/${expectedItemsCount} rows` : "Empty table"}`,
+        )
+      }
+
+      setVerificationStatus(
+        results.isValid
+          ? `✅ Verification passed! ${results.totalTables} tables (${results.emptyTables} empty) with ${results.totalRenderedRows} total rows are ready`
+          : `❌ Verification failed! Found ${results.issues.length} issues`,
+      )
+
+      return results
+    } catch (error) {
+      results.isValid = false
+      results.issues.push(`Verification error: ${error.message}`)
+      setVerificationStatus(`❌ Verification failed: ${error.message}`)
+      return results
+    }
+  }
+
+  // Handle verification before PDF generation
+  const handleVerifyAndDownload = async () => {
+    setShowVerificationModal(true)
+    setVerificationPassed(false)
+    setVerificationStatus("Initializing verification...")
+
+    try {
+      // Wait for content to fully render
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      const results = await verifyAllTableData()
+      setVerificationResults(results)
+
+      if (results.isValid) {
+        setVerificationPassed(true)
+        setVerificationStatus("✅ All data verified successfully! Ready to generate PDF.")
+      } else {
+        setVerificationPassed(false)
+        setVerificationStatus("❌ Data verification failed. Please check the issues below.")
+      }
+    } catch (error) {
+      setVerificationPassed(false)
+      setVerificationStatus(`❌ Verification error: ${error.message}`)
+    }
+  }
+
+  // Proceed with PDF generation after verification
+  const proceedWithPDFGeneration = async () => {
+    setShowVerificationModal(false)
+    await generatePDF()
+  }
+
+  // Calculate element height in PDF coordinates
+  const calculateElementPDFHeight = (element, pdfWidth, margins) => {
+    if (!element) return 0
+    const elementWidth = element.offsetWidth || 800
+    const elementHeight = element.offsetHeight || 0
+    const scaleFactor = (pdfWidth - 2 * margins) / elementWidth
+    return elementHeight * scaleFactor
+  }
+
+  // Check available space on current page
+  const getAvailableSpace = (pdfHeight, currentYOffset, margins) => {
+    return pdfHeight - currentYOffset - margins - 60 // 60pt buffer for page numbers
+  }
+
+  // Smart space utilization - try to fit smaller elements in remaining space
+  const canFitInRemainingSpace = (element, pdfWidth, pdfHeight, margins, currentYOffset) => {
+    const elementHeight = calculateElementPDFHeight(element, pdfWidth, margins)
+    const availableSpace = getAvailableSpace(pdfHeight, currentYOffset, margins)
+    return elementHeight <= availableSpace
   }
 
   const generatePDF = async () => {
@@ -193,81 +381,80 @@ const OrderDetails = () => {
 
       // Add Header
       const headerElement = document.querySelector("header")
-      yOffset = await addElementToPDF(headerElement, pdf, pdfWidth, pdfHeight, margins, yOffset)
-      yOffset += 20 // Space after header
+      if (headerElement) {
+        yOffset = await addElementToPDF(headerElement, pdf, pdfWidth, pdfHeight, margins, yOffset)
+        yOffset += 10
+      }
 
       // Add customer details
       const customerCard = content.querySelector(".card:not(.pdf-table)")
-      yOffset = await addElementToPDF(customerCard, pdf, pdfWidth, pdfHeight, margins, yOffset)
-      yOffset += 10 // Small space after customer details
+      if (customerCard) {
+        // Check if customer card fits in remaining space
+        if (!canFitInRemainingSpace(customerCard, pdfWidth, pdfHeight, margins, yOffset)) {
+          pdf.addPage()
+          yOffset = margins
+        }
+        yOffset = await addElementToPDF(customerCard, pdf, pdfWidth, pdfHeight, margins, yOffset)
+        yOffset += 5
+      }
       setPdfProgress(10)
 
-      // Get all tables
+      // Get all tables (including empty ones)
       const tables = content.querySelectorAll(".pdf-table")
       const totalTables = tables.length
       const progressPerTable = 80 / totalTables
 
-      // Process each table
+      // Process each table with smart space utilization
       for (let i = 0; i < tables.length; i++) {
         const table = tables[i]
+        const tableTitle = table.getAttribute("data-table-title") || `Table ${i + 1}`
+        const hasData = table.getAttribute("data-has-data") === "true"
 
-        // Get the table header (card-header)
-        const header = table.querySelector(".card-header")
-        const tableContent = table.querySelector(".table-responsive")
+        // Process table with optimized spacing
+        yOffset = await processTableWithOptimizedSpacing(
+          table,
+          pdf,
+          pdfWidth,
+          pdfHeight,
+          margins,
+          yOffset,
+          tableTitle,
+          hasData,
+        )
 
-        // Add the table header
-        yOffset = await addElementToPDF(header, pdf, pdfWidth, pdfHeight, margins, yOffset)
-        yOffset += 5 // Small space after header
-
-        // Get the rows of the table
-        const rows = tableContent.querySelectorAll("tbody tr")
-        const thead = tableContent.querySelector("thead")
-
-        // Add the column headers
-        yOffset = await addElementToPDF(thead, pdf, pdfWidth, pdfHeight, margins, yOffset)
-        yOffset += 5 // Small space after column headers
-
-        // Process each row
-        for (let j = 0; j < rows.length; j++) {
-          // Check if we need a new page
-          if (yOffset > pdfHeight - margins) {
-            pdf.addPage()
-            yOffset = margins
-            // Add the table header and column headers again on the new page
-            yOffset = await addElementToPDF(header, pdf, pdfWidth, pdfHeight, margins, yOffset)
-            yOffset += 5
-            yOffset = await addElementToPDF(thead, pdf, pdfWidth, pdfHeight, margins, yOffset)
-            yOffset += 5
-          }
-
-          // Add the row
-          yOffset = await addElementToPDF(rows[j], pdf, pdfWidth, pdfHeight, margins, yOffset)
+        // Add minimal spacing only if there's reasonable space left
+        const remainingSpace = getAvailableSpace(pdfHeight, yOffset, margins)
+        if (remainingSpace > 100) {
+          yOffset += 5 // Minimal spacing between tables
         }
-
-        // Add a small space after the table
-        yOffset += 10
 
         // Update progress
         setPdfProgress((prevProgress) => prevProgress + progressPerTable)
       }
 
-      // Add Footer
+      // Add Footer with smart positioning
       const footerElement = document.querySelector("footer")
-      const footerHeight = footerElement.offsetHeight
-      const footerCanvas = await html2canvas(footerElement, {
-        scale: 1.5,
-        useCORS: true,
-        logging: false,
-        allowTaint: true,
-      })
-      const footerImgData = footerCanvas.toDataURL("image/jpeg", 0.7)
+      if (footerElement) {
+        const footerHeight = 80
+        if (!canFitInRemainingSpace(footerElement, pdfWidth, pdfHeight, margins, yOffset)) {
+          pdf.addPage()
+          yOffset = margins
+        }
 
-      // Add footer to the last page
-      const footerWidth = pdfWidth - 2 * margins
-      const footerImgHeight = (footerCanvas.height * footerWidth) / footerCanvas.width
-      const footerY = pdfHeight - footerImgHeight - margins
+        const footerCanvas = await html2canvas(footerElement, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+        })
+        const footerImgData = footerCanvas.toDataURL("image/jpeg", 0.8)
 
-      pdf.addImage(footerImgData, "JPEG", margins, footerY, footerWidth, footerImgHeight)
+        const footerWidth = pdfWidth - 2 * margins
+        const footerImgHeight = (footerCanvas.height * footerWidth) / footerCanvas.width
+
+        pdf.addImage(footerImgData, "JPEG", margins, yOffset, footerWidth, footerImgHeight)
+      }
 
       // Add page numbers
       const pageCount = pdf.internal.getNumberOfPages()
@@ -296,24 +483,172 @@ const OrderDetails = () => {
     }
   }
 
-  // Helper function to add an element to the PDF
-  const addElementToPDF = async (element, pdf, pdfWidth, pdfHeight, margins, yOffset) => {
+  // Process table with optimized spacing to minimize empty spaces and prevent header duplication
+  const processTableWithOptimizedSpacing = async (
+    table,
+    pdf,
+    pdfWidth,
+    pdfHeight,
+    margins,
+    yOffset,
+    tableTitle,
+    hasData,
+  ) => {
     try {
+      // Ensure table is visible
+      table.scrollIntoView({ behavior: "instant", block: "start" })
+      await new Promise((resolve) => setTimeout(resolve, 200))
+
+      const header = table.querySelector(".card-header")
+      const tableContent = table.querySelector(".table-responsive")
+      const thead = tableContent.querySelector("thead")
+      const tbody = tableContent.querySelector("tbody")
+      const rows = tbody.querySelectorAll("tr")
+
+      let isFirstPageOfTable = true // Track if we're on the first page of this table
+
+      // Add table header ONLY ONCE at the beginning of the table
+      if (header) {
+        if (!canFitInRemainingSpace(header, pdfWidth, pdfHeight, margins, yOffset)) {
+          pdf.addPage()
+          yOffset = margins
+        }
+        yOffset = await addElementToPDFEnhanced(
+          header,
+          pdf,
+          pdfWidth,
+          pdfHeight,
+          margins,
+          yOffset,
+          `${tableTitle} Header`,
+        )
+        isFirstPageOfTable = true // We just added the main header
+      }
+
+      // Add column headers
+      if (thead) {
+        if (!canFitInRemainingSpace(thead, pdfWidth, pdfHeight, margins, yOffset)) {
+          pdf.addPage()
+          yOffset = margins
+          isFirstPageOfTable = false // Now we're on a continuation page
+          // DO NOT re-add the main table header here - only column headers
+        }
+        yOffset = await addElementToPDFEnhanced(
+          thead,
+          pdf,
+          pdfWidth,
+          pdfHeight,
+          margins,
+          yOffset,
+          `${tableTitle} Column Headers`,
+        )
+      }
+
+      // Process rows with smart batching
+      let rowBatch = []
+      const maxRowsPerBatch = 10
+
+      for (let j = 0; j < rows.length; j++) {
+        const row = rows[j]
+        rowBatch.push(row)
+
+        // Check if we should process current batch
+        const shouldProcessBatch =
+          rowBatch.length >= maxRowsPerBatch ||
+          j === rows.length - 1 ||
+          !canFitInRemainingSpace(row, pdfWidth, pdfHeight, margins, yOffset)
+
+        if (shouldProcessBatch) {
+          // Check if batch fits on current page
+          const batchHeight = rowBatch.length * 25 // Estimated row height
+          if (getAvailableSpace(pdfHeight, yOffset, margins) < batchHeight) {
+            pdf.addPage()
+            yOffset = margins
+            isFirstPageOfTable = false // Now we're on a continuation page
+
+            // ONLY re-add column headers on continuation pages, NOT the main table header
+            if (thead) {
+              yOffset = await addElementToPDFEnhanced(
+                thead,
+                pdf,
+                pdfWidth,
+                pdfHeight,
+                margins,
+                yOffset,
+                `${tableTitle} Column Headers (Continued)`,
+              )
+            }
+          }
+
+          // Process each row in the batch
+          for (const batchRow of rowBatch) {
+            batchRow.scrollIntoView({ behavior: "instant", block: "nearest" })
+            await new Promise((resolve) => setTimeout(resolve, 30))
+
+            yOffset = await addElementToPDFEnhanced(
+              batchRow,
+              pdf,
+              pdfWidth,
+              pdfHeight,
+              margins,
+              yOffset,
+              `${tableTitle} Row`,
+            )
+          }
+
+          // Reset batch
+          rowBatch = []
+        }
+      }
+
+      return yOffset
+    } catch (error) {
+      console.error(`Error processing table ${tableTitle}:`, error)
+      return yOffset + 50
+    }
+  }
+
+  // Enhanced helper function with better error handling and data capture
+  const addElementToPDFEnhanced = async (
+    element,
+    pdf,
+    pdfWidth,
+    pdfHeight,
+    margins,
+    yOffset,
+    elementName = "Element",
+  ) => {
+    try {
+      // Ensure element is fully loaded and visible
+      if (!element || element.offsetHeight === 0) {
+        console.warn(`${elementName} is not visible or has no height`)
+        return yOffset
+      }
+
       const canvas = await html2canvas(element, {
-        scale: 1.5,
+        scale: 2,
         useCORS: true,
         logging: false,
         allowTaint: true,
-        windowWidth: Math.max(document.documentElement.clientWidth, 1024), // Ensure minimum width for consistent rendering
+        backgroundColor: "#ffffff",
+        windowWidth: Math.max(document.documentElement.clientWidth, 1024),
+        onclone: (clonedDoc) => {
+          // Ensure all content is visible in the cloned document
+          const clonedElement = clonedDoc.querySelector(`[data-row-index="${element.getAttribute("data-row-index")}"]`)
+          if (clonedElement) {
+            clonedElement.style.visibility = "visible"
+            clonedElement.style.display = "table-row"
+          }
+        },
       })
-      const imgData = canvas.toDataURL("image/jpeg", 0.7)
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.8)
       const imgWidth = pdfWidth - 2 * margins
       const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-      // Check if the element fits on the current page
-      if (yOffset + imgHeight > pdfHeight - margins) {
-        pdf.addPage()
-        yOffset = margins
+      // Validate captured content
+      if (imgHeight < 10) {
+        console.warn(`${elementName} captured with very small height: ${imgHeight}`)
       }
 
       // Center the image horizontally
@@ -322,20 +657,66 @@ const OrderDetails = () => {
 
       return yOffset + imgHeight
     } catch (error) {
-      console.error("Error adding element to PDF:", error)
-      return yOffset
+      console.error(`Error adding ${elementName} to PDF:`, error)
+      return yOffset + 20 // Return with minimal offset to continue
     }
   }
 
-  const handleShare = () => {
-    const shareLink = `${window.location.origin}/shared-order/${orderId}`
-    setShareLink(shareLink)
-    setShowShareModal(true)
+  // Original helper function for backward compatibility
+  const addElementToPDF = async (element, pdf, pdfWidth, pdfHeight, margins, yOffset) => {
+    return addElementToPDFEnhanced(element, pdf, pdfWidth, pdfHeight, margins, yOffset)
   }
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareLink)
-    alert("Link copied to clipboard!")
+  // Direct copy link functionality without modal
+  const handleCopyLink = async () => {
+    try {
+      const shareLink = `${window.location.origin}/shared-order/${orderId}`
+      await navigator.clipboard.writeText(shareLink)
+
+      // Show success message
+      const alertDiv = document.createElement("div")
+      alertDiv.className = "alert alert-success position-fixed"
+      alertDiv.style.cssText = `
+        top: 20px; 
+        right: 20px; 
+        z-index: 9999; 
+        min-width: 250px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: none;
+        background-color: #d4edda;
+        color: #155724;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-weight: 500;
+      `
+      alertDiv.innerHTML = `
+        <div class="d-flex align-items-center">
+          <i class="fas fa-check-circle me-2"></i>
+          Link copied to clipboard successfully!
+        </div>
+      `
+
+      document.body.appendChild(alertDiv)
+
+      // Remove the alert after 3 seconds
+      setTimeout(() => {
+        if (document.body.contains(alertDiv)) {
+          document.body.removeChild(alertDiv)
+        }
+      }, 3000)
+    } catch (error) {
+      console.error("Failed to copy link:", error)
+      // Fallback for older browsers
+      const shareLink = `${window.location.origin}/shared-order/${orderId}`
+      const textArea = document.createElement("textarea")
+      textArea.value = shareLink
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
+
+      alert("Link copied to clipboard!")
+    }
   }
 
   const handleDirectShare = (platform) => {
@@ -402,19 +783,19 @@ const OrderDetails = () => {
               <FaEdit className="me-2" /> Edit Order
             </Link>
             <button
-              onClick={generatePDF}
+              onClick={handleVerifyAndDownload}
               className="btn"
               style={{ backgroundColor: "#3d9565", color: "white" }}
               disabled={generating}
             >
-              <FaDownload className="me-2" /> Download PDF
+              <FaDownload className="me-2" /> Verify & Download PDF
             </button>
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-share">
                 <FaShare className="me-2" /> Share
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item onClick={handleShare}>
+                <Dropdown.Item onClick={handleCopyLink}>
                   <FaShare className="me-2" /> Copy Link
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => handleDirectShare("whatsapp")}>
@@ -507,24 +888,96 @@ const OrderDetails = () => {
           {renderItemsTable(order.idliBatter, "Idli Batter", ["Count"])}
         </div>
 
-        {/* Share Modal */}
-        <Modal show={showShareModal} onHide={() => setShowShareModal(false)} centered>
-          <Modal.Header closeButton style={{ backgroundColor: "#3d9565", color: "white" }}>
-            <Modal.Title>Share Order</Modal.Title>
+        {/* Data Verification Modal */}
+        <Modal show={showVerificationModal} centered backdrop="static" keyboard={false} size="lg">
+          <Modal.Header style={{ backgroundColor: "#3d9565", color: "white" }}>
+            <Modal.Title>
+              <FaCheckCircle className="me-2" />
+              Data Verification
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Share this link to view the order details:</p>
-            <div className="input-group mb-3">
-              <input type="text" className="form-control" value={shareLink} readOnly />
-              <button className="btn btn-outline-secondary" type="button" onClick={handleCopyLink}>
-                Copy
-              </button>
+            <div className="mb-3">
+              <p className="mb-2">Verifying all table data before PDF generation...</p>
+              <small className="text-muted">{verificationStatus}</small>
             </div>
+
+            {verificationResults && (
+              <div className="mt-3">
+                <Alert variant={verificationPassed ? "success" : "warning"}>
+                  <div className="d-flex align-items-center mb-2">
+                    {verificationPassed ? (
+                      <FaCheckCircle className="text-success me-2" />
+                    ) : (
+                      <FaExclamationTriangle className="text-warning me-2" />
+                    )}
+                    <strong>{verificationPassed ? "Verification Passed!" : "Verification Issues Found"}</strong>
+                  </div>
+                  <div className="small">
+                    <p className="mb-1">
+                      <strong>Total Tables:</strong> {verificationResults.totalTables}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Empty Tables:</strong> {verificationResults.emptyTables}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Total Rows:</strong> {verificationResults.totalRenderedRows} /{" "}
+                      {verificationResults.totalExpectedRows}
+                    </p>
+                  </div>
+                </Alert>
+
+                {verificationResults.tableDetails.length > 0 && (
+                  <div className="mt-3">
+                    <h6>Table Details:</h6>
+                    <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {verificationResults.tableDetails.map((table, index) => (
+                        <div key={index} className="small border-bottom py-1">
+                          <strong>{table.title}:</strong>
+                          {table.isEmpty ? (
+                            <span className="text-info"> Empty table</span>
+                          ) : (
+                            <>
+                              {table.renderedRows}/{table.expectedRows} rows
+                              {table.emptyRows > 0 && <span className="text-warning"> ({table.emptyRows} empty)</span>}
+                              {!table.isComplete && <span className="text-danger"> ⚠️ Incomplete</span>}
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {verificationResults.issues.length > 0 && (
+                  <div className="mt-3">
+                    <h6 className="text-warning">Issues Found:</h6>
+                    <ul className="small text-danger">
+                      {verificationResults.issues.map((issue, index) => (
+                        <li key={index}>{issue}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowShareModal(false)}>
-              Close
-            </Button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setShowVerificationModal(false)}
+              disabled={!verificationResults}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn"
+              style={{ backgroundColor: "#3d9565", color: "white" }}
+              onClick={proceedWithPDFGeneration}
+              disabled={!verificationPassed}
+            >
+              {verificationPassed ? "Generate PDF" : "Fix Issues First"}
+            </button>
           </Modal.Footer>
         </Modal>
 
@@ -534,8 +987,11 @@ const OrderDetails = () => {
             <Modal.Title>Generating PDF</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>Please wait while we generate your PDF...</p>
+            <p>Please wait while we generate your optimized PDF...</p>
             <ProgressBar animated now={pdfProgress} label={`${Math.round(pdfProgress)}%`} />
+            <small className="text-muted mt-2 d-block">
+              Preventing header duplication and optimizing space utilization...
+            </small>
           </Modal.Body>
         </Modal>
       </div>
@@ -545,4 +1001,3 @@ const OrderDetails = () => {
 }
 
 export default OrderDetails
-
